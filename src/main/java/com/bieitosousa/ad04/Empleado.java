@@ -23,30 +23,54 @@
  */
 package com.bieitosousa.ad04;
 
+
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 import javax.persistence.Column;
+import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 /**
  *
  * @author bieito
  */
+@Entity
+@Table(name = "EMPLEADO")
+
 public class Empleado implements Serializable {
 
-@Id
-@Column (name="EMPLEADO_id")   
-    private int id = -1;
-@Column (name="EMPLEADO_name")
+    private Set<TiendaEmpleado> tiendaEmpleado = new HashSet<TiendaEmpleado>();
+
+    @Id
+    @Column(name = "EMPLEADO_id")
+    private int id ;
+    @Column(name = "EMPLEADO_name")
     private String name;
-@Column (name="EMPLEADO_apellidos")
-private String apellidos;
-@Column (name="EMPLEADO_nHoras")
+    @Column(name = "EMPLEADO_apellido")
+    private String apellido;
+    @Column(name = "EMPLEADO_nHoras")
     private float nHoras = (float) -1;
 
-    public Empleado(String name, String apellidos) {
+    @OneToMany(mappedBy = "empleado")
+    public Set<TiendaEmpleado> getTiendaEmpleado() {
+        return tiendaEmpleado;
+    }
+
+    public void addTiendaEmpleado(TiendaEmpleado tiendaEmpleado) {
+        this.tiendaEmpleado.add(tiendaEmpleado);
+    }
+
+    public void setTiendaEmpleado(Set<TiendaEmpleado> tiendaEmpleado) {
+        this.tiendaEmpleado = tiendaEmpleado;
+    }
+
+    public Empleado(String name, String apellido) {
         this.name = name;
-        this.apellidos = apellidos;
+        this.apellido = apellido;
     }
 
     public int getId() {
@@ -68,12 +92,12 @@ private String apellidos;
         this.name = name;
     }
 
-    public String getApellidos() {
-        return apellidos;
+    public String getApellido() {
+        return apellido;
     }
 
-    public void setApellidos(String apellidos) {
-        this.apellidos = apellidos;
+    public void setApellido(String apellido) {
+        this.apellido = apellido;
     }
 
     public float getnHoras(Tienda t) {
@@ -87,11 +111,11 @@ private String apellidos;
 
     @Override
     public String toString() {
-        return "Empleado{" + "id=" + id + ", name=" + name + ", apellidos=" + apellidos + '}';
+        return "Empleado{" + "id=" + id + ", name=" + name + ", apellidos=" + apellido + '}';
     }
 
     public String toString(Tienda t) {
-        return "Empleado{" + "id=" + id + ", name=" + name + ", apellidos=" + apellidos + ", nHoras=" + getnHoras(t) + '}';
+        return "Empleado{" + "id=" + id + ", name=" + name + ", apellidos=" + apellido + ", nHoras=" + getnHoras(t) + '}';
     }
 
     @Override
@@ -115,7 +139,7 @@ private String apellidos;
         if (!Objects.equals(this.name, other.name)) {
             return false;
         }
-        if (!Objects.equals(this.apellidos, other.apellidos)) {
+        if (!Objects.equals(this.apellido, other.apellido)) {
             return false;
         }
         return true;
@@ -128,5 +152,5 @@ private String apellidos;
     private void cargarHoras(Tienda t) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-    
+
 }

@@ -43,20 +43,23 @@ import org.hibernate.query.Query;
 @Table(name = "CLIENTE")
 
 public class Cliente implements Serializable {
-
     static SessionFactory sessionFact = null;
     static Session session = null;
     static Transaction tran = null;
+    private static final long serialVersionUID = 1L;
+   
     @Id
+    @GeneratedValue
     @Column(name = "CLIENTE_id")
     private int id;
-    @Column(name = "CLIENTE_name")
+    @Column(name = "CLIENTE_name", nullable=false)
     private String name;
-    @Column(name = "CLIENTE_apellido")
+    @Column(name = "CLIENTE_apellido", nullable=false)
     private String apellido;
-    @Column(name = "CLIENTE_email")
+    @Column(name = "CLIENTE_email", nullable=false)
     private String email;
-
+    @Column(name = "CLIENTE_nomCompleto", nullable=false, unique = true)
+    private String nomCompleto;
     public Cliente() {
 
     }
@@ -65,6 +68,7 @@ public class Cliente implements Serializable {
         this.name = name;
         this.apellido = apellido;
         this.email = email;
+        this.nomCompleto=name+apellido;
     }
 
     public int getId() {
@@ -130,90 +134,94 @@ public class Cliente implements Serializable {
         }
         return true;
     }
-
-    public static boolean view() {
-        try {
-            if ((sessionFact = HibernateUtil.getSessionFactory()) != null) {
-                if ((session = sessionFact.openSession()) != null) {
-                    Query q1 = session.createQuery("SELECT cli FROM CLIENTE cli");
-                    List<Cliente> clientes = q1.list();
-                    for (Cliente cli : clientes) {
-                        System.out.println(cli.toString());
-                    }
-                    session.close();
-                }
-            }
-        } catch (HibernateException e) {
-            e.printStackTrace();
-            return false;
-        }
-        return true;
-    }
-
-    public static boolean add(Cliente cli) {
-        try {
-            //Collemos a sesión de Hibernate
-            if ((sessionFact = HibernateUtil.getSessionFactory()) != null) {
-                if ((session = sessionFact.openSession()) != null) {
-                    //Comenzamos unha transacción
-                    if ((tran = session.beginTransaction()) != null) {
-                        //Gardamos o equipo
-                        session.save(cli);
-                        //Facemos un commit da transacción
-                        tran.commit();
-                        session.close();
-                        return true;
-                    }
-                }
-            }
-        } catch (HibernateException e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
     
-    public static  boolean delete(Cliente cli) {
-        try {
-            //Collemos a sesión de Hibernate
-            if ((sessionFact = HibernateUtil.getSessionFactory()) != null) {
-                if ((session = sessionFact.openSession()) != null) {
-                    //Comenzamos unha transacción
-                    if ((tran = session.beginTransaction()) != null) {
-                        //Gardamos o equipo
-                        session.delete(cli);
-                        //Facemos un commit da transacción
-                        tran.commit();
-                        session.close();
-                        return true;
-                    }
-                }
-            }
-        } catch (HibernateException e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
-    public static  boolean update(Cliente cli) {
-        try {
-            //Collemos a sesión de Hibernate
-            if ((sessionFact = HibernateUtil.getSessionFactory()) != null) {
-                if ((session = sessionFact.openSession()) != null) {
-                    //Comenzamos unha transacción
-                    if ((tran = session.beginTransaction()) != null) {
-                        //Gardamos o equipo
-                        session.update(cli);
-                        //Facemos un commit da transacción
-                        tran.commit();
-                        session.close();
-                        return true;
-                    }
-                }
-            }
-        } catch (HibernateException e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
+    
+    
+
+//    public static boolean view() {
+//        try {
+//            if ((sessionFact = HibernateUtil.getSessionFactory()) != null) {
+//                if ((session = sessionFact.openSession()) != null) {
+//                    Query q1 = session.createQuery("from Cliente");
+//                    List<Cliente> clientes = q1.list();
+//                    for (Cliente cli : clientes) {
+//                        System.out.println(cli.toString());
+//                    }
+//                    session.close();
+//                }
+//            }
+//        } catch (HibernateException e) {
+//            e.printStackTrace();
+//            return false;
+//        }
+//        return true;
+//    }
+//
+//    public static boolean add(Cliente cli) {
+//        System.out.println("entrando intenta añadir un cliente");
+//        try {
+//            //Collemos a sesión de Hibernate
+//            if ((sessionFact = HibernateUtil.getSessionFactory()) != null) {
+//                if ((session = sessionFact.openSession()) != null) {
+//                    //Comenzamos unha transacción
+//                    if ((tran = session.beginTransaction()) != null) {
+//                        //Gardamos o equipo
+//                        session.save(cli);
+//                        //Facemos un commit da transacción
+//                        tran.commit();
+//                        session.close();
+//                        return true;
+//                    }
+//                }
+//            }
+//        } catch (HibernateException e) {
+//            e.printStackTrace();
+//        }
+//        return false;
+//    }
+//    
+//    public static  boolean delete(Cliente cli) {
+//        try {
+//            //Collemos a sesión de Hibernate
+//            if ((sessionFact = HibernateUtil.getSessionFactory()) != null) {
+//                if ((session = sessionFact.openSession()) != null) {
+//                    //Comenzamos unha transacción
+//                    if ((tran = session.beginTransaction()) != null) {
+//                        //Gardamos o equipo
+//                        session.delete(cli);
+//                        //Facemos un commit da transacción
+//                        tran.commit();
+//                        session.close();
+//                        return true;
+//                    }
+//                }
+//            }
+//        } catch (HibernateException e) {
+//            e.printStackTrace();
+//        }
+//        return false;
+//    }
+//    public static  boolean update(Cliente cli) {
+//        try {
+//            //Collemos a sesión de Hibernate
+//            if ((sessionFact = HibernateUtil.getSessionFactory()) != null) {
+//                if ((session = sessionFact.openSession()) != null) {
+//                    //Comenzamos unha transacción
+//                    if ((tran = session.beginTransaction()) != null) {
+//                        //Gardamos o equipo
+//                        session.update(cli);
+//                        //Facemos un commit da transacción
+//                        tran.commit();
+//                        session.close();
+//                        return true;
+//                    }
+//                }
+//            }
+//        } catch (HibernateException e) {
+//            e.printStackTrace();
+//        }
+//        return false;
+//    }
     
 
 }// fin cliente

@@ -21,47 +21,36 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.bieitosousa.ad04.Json;
+package com.bieitosousa.ad04;
 
-import com.bieitosousa.ad04.HibernateUtil;
+import com.bieitosousa.ad04.Json.Provincia;
 import java.io.Serializable;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import org.hibernate.HibernateException;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
 
 /**
  *
  * @author bieito
  */
 @Entity
-@Table(name = "PROVINCIA")
+@Table(name = "TIENDAEMPLEADO")
+public class TiendaEmpleado implements Serializable {
 
-public class Provincia implements Serializable {
-
-    static SessionFactory sessionFact = null;
-    static Session session = null;
-    static Transaction tran = null;
+    private int id;
+    private Tienda tienda;
+    private Empleado empleado;
+    private float nhora;
 
     @Id
-    @Column(name = "PROVINCIA_id")
-    private int id;
-    @Column(name = "PROVINCIA_name")
-    private String nome;
-
-    public Provincia() {
-    }
-
-    public Provincia(int id, String nome) {
-        this.id = id;
-        this.nome = nome;
-        // System.out.println("Se a creado una proviencia"+id +" nombre "+ nome);
-
-    }
+    @Column(name = "TIENDAEMPLEADO_id")
+    @GeneratedValue(strategy = GenerationType.AUTO)
 
     public int getId() {
         return id;
@@ -71,20 +60,42 @@ public class Provincia implements Serializable {
         this.id = id;
     }
 
-    public String getNome() {
-        return nome;
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "TIENDA_ID")
+    public Tienda getTienda() {
+        return tienda;
     }
 
-    public void setNome(String nome) {
-        this.nome = nome;
+    public void setTienda(Tienda tienda) {
+        this.tienda = tienda;
     }
 
-   
-
-    @Override
-    public String toString() {
-        return "Provincia{" + "id=" + id + ", nome=" + nome + '}';
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "EMPLEADO_ID")
+    public Empleado getEmpleado() {
+        return empleado;
     }
 
-   
+    public void setEmpleado(Empleado empleado) {
+        this.empleado = empleado;
+    }
+
+    @Column(name = "TIENDAEMPLEADO_nhora")
+    public float getNhora() {
+        return nhora;
+    }
+
+    public void setNhora(float nhora) {
+        this.nhora = nhora;
+    }
+    //    @ManyToOne
+//    @JoinColumn (name="TIENDA_id")   
+//    private Tienda tienda;
+//    
+//    @ManyToOne
+//    @JoinColumn (name="EMPLEADO_id")   
+//    private Cliente cliente;
+//    
+//    @Column (name="nHoras")   
+//    private float nhoras;
 }

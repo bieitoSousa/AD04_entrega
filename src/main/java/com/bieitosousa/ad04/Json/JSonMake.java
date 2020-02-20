@@ -12,6 +12,9 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.stream.JsonReader;
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
 import java.util.List;
 import java.util.Map.Entry;
@@ -20,7 +23,12 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import java.io.FileReader;
+import java.io.UnsupportedEncodingException;
+
 import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import sun.nio.cs.StandardCharsets;
 
 public class JSonMake {
 
@@ -30,23 +38,17 @@ public class JSonMake {
     private static DbConnection connConf = null;
     private static Hibernate hConf = null;
     private static ConfigDB configDB = null;
-    static File fProvincias = new File(".\\provincias.json");
-    static File fconfig = new File(".\\config.json");
+    static final File fProvincias = new File(".\\provincias.json");
+    static final File fconfig = new File(".\\config.json");
 
     public static File getfProvincias() {
         return fProvincias;
     }
 
-    public static void setfProvincias(File fProvincias) {
-        JSonMake.fProvincias = fProvincias;
-    }
+
 
     public static File getFconfig() {
         return fconfig;
-    }
-
-    public static void setFconfig(File fconfig) {
-        JSonMake.fconfig = fconfig;
     }
 
 
@@ -70,6 +72,7 @@ public class JSonMake {
         }
 
     }
+
     public static ConfigDB getConfigDB() {
 
         if (configDB != null) {
@@ -80,7 +83,6 @@ public class JSonMake {
         }
 
     }
-    
 
     public static void readAsString_Json(File fileJson) throws java.io.IOException {
         JsonParser parser = new JsonParser();
@@ -161,6 +163,7 @@ public class JSonMake {
         }
         return obj;
     }
+
     public static Object ReadObjJsonInFile(File objectFile, Class cla) {
         Gson gson = new Gson();
         Object objaux = null;
@@ -174,9 +177,8 @@ public class JSonMake {
         }
         return objaux;
     }
-    
-    
-      public static Object ReadHibernateJsonInFile(File objectFile) {
+
+    public static Object ReadHibernateJsonInFile(File objectFile) {
         Gson gson = new Gson();
         Hibernate objaux = null;
         try (Reader reader = new FileReader(objectFile)) {
@@ -189,10 +191,11 @@ public class JSonMake {
         }
         return objaux;
     }
-      public static Object ReadConfigDBJsonInFile(File objectFile) {
+
+    public static Object ReadConfigDBJsonInFile(File objectFile) {
         Gson gson = new Gson();
         ConfigDB objaux = null;
-          System.out.println("mirando la configuracion");
+        System.out.println("mirando la configuracion");
         try (Reader reader = new FileReader(objectFile)) {
             System.out.println("extrallendo configuracion");
             // Convert JSON File to Java Object
@@ -201,20 +204,21 @@ public class JSonMake {
             System.out.println("mostrando objeto auxiliar");
             System.out.println(objaux);
             connConf = objaux.getDbc();
-            hConf =objaux.getHib();
+            hConf = objaux.getHib();
 
         } catch (IOException e) {
             e.printStackTrace();
         }
         return objaux;
     }
-      public static Object ReadDbConnectionJsonInFile(File objectFile) {
+
+    public static Object ReadDbConnectionJsonInFile(File objectFile) {
         Gson gson = new Gson();
         DbConnection objaux = null;
-          System.out.println("estoy en ReadDbConnectionJsonInFile");
+        System.out.println("estoy en ReadDbConnectionJsonInFile");
         try (Reader reader = new FileReader(objectFile)) {
             // Convert JSON File to Java Object
-             objaux = (DbConnection)gson.fromJson(reader, DbConnection.class);
+            objaux = (DbConnection) gson.fromJson(reader, DbConnection.class);
             // print staff object
             System.out.println("recupero el objeto : ReadDbConnectionJsonInFile");
             System.out.println(objaux);
@@ -261,32 +265,27 @@ public class JSonMake {
 //        return provinciasList;
 //    }
 //    
-    public static  boolean  CargarFileProvincias(){
-    Gson gson = new Gson();
+    public static  boolean CargarFileProvincias()  {
+        Gson gson = new Gson();
         Provincias obj = null;
         List<Provincia> provinciasList = null;
-        System.out.println("=== INTENTADO CARGAR EL FICHERO ==== [ "+fProvincias.toString()+"]");
-        try (Reader reader = new FileReader(fProvincias)) {
-            System.out.println("-- INTETADO LEER PROVINCIAS");
+        BufferedReader in;
+   
+        try (Reader reader = (in = new BufferedReader(new InputStreamReader(new FileInputStream(fProvincias), "utf-8")))) {
             obj = gson.fromJson(reader, Provincias.class);
-            if (obj != null){
-                System.out.println("INSERTANDO PROVIENCIAS");
-            provinciasList = obj.getProvincias();
+            if (obj != null) {
+                provinciasList = obj.getProvincias();
+                if (provinciasList.size() > 50) {
+                    return true;
+                } else {
+                    return false;
+                }
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return false;
         }
-         System.out.println("=== INTENTADO LEER EL FICHERO ==== [ "+fProvincias.toString()+"]");
-        if(provinciasList.size()>0){
-            System.out.println("leyendo ..........................");
-             for (Provincia p :  provinciasList){
-                 System.out.print(p.getNome()+",");
-        }
-        }else{
-            System.out.println("fallo al CARGAR fichero provincias "+fProvincias.toString());
-        }
-        return true;
+        return false;
     }
 //public static Compania ReadObjJsonInFileCompania( File objectFile){
 //    Gson gson = new Gson();
@@ -301,18 +300,18 @@ public class JSonMake {
 //    }
 //    return obj;
 //}
-    public static void main(String[] arg) {
-        System.out.println( getDbConnection().getName());
-        System.out.println( getDbConnection().getAddress());
-        System.out.println( getDbConnection().getPassword());
-        System.out.println( getDbConnection().getPort());
-        System.out.println( getDbConnection().getUser());
 
-        System.out.println( getHibernate().getDialect());
-        System.out.println( getHibernate().getDriver());
-        System.out.println( getHibernate().getHBM2DDL_AUTO());
-        System.out.println( getHibernate().getSHOW_SQL());
- 
+    public static void main(String[] arg) {
+        System.out.println(getDbConnection().getName());
+        System.out.println(getDbConnection().getAddress());
+        System.out.println(getDbConnection().getPassword());
+        System.out.println(getDbConnection().getPort());
+        System.out.println(getDbConnection().getUser());
+
+        System.out.println(getHibernate().getDialect());
+        System.out.println(getHibernate().getDriver());
+        System.out.println(getHibernate().getHBM2DDL_AUTO());
+        System.out.println(getHibernate().getSHOW_SQL());
 
     }
 
@@ -420,6 +419,7 @@ public class JSonMake {
         public String getSHOW_SQL() {
             return String.valueOf(SHOW_SQL);
         }
+
         public boolean isSHOW_SQL() {
             return SHOW_SQL;
         }
@@ -427,10 +427,6 @@ public class JSonMake {
         public void setSHOW_SQL(boolean SHOW_SQL) {
             this.SHOW_SQL = SHOW_SQL;
         }
-
-       
-
-    
 
         @Override
         public String toString() {
@@ -440,8 +436,9 @@ public class JSonMake {
     }
 
     public static class ConfigDB {
-    private DbConnection dbConnection ;
-    private Hibernate hibernate;
+
+        private DbConnection dbConnection;
+        private Hibernate hibernate;
 
         public ConfigDB(DbConnection dbConnection, Hibernate hibernate) {
             this.dbConnection = dbConnection;
@@ -468,7 +465,7 @@ public class JSonMake {
         public String toString() {
             return "ConfigDB{" + "dbConnection=" + dbConnection + ", hibernate=" + hibernate + '}';
         }
-       
+
     }
 
 }

@@ -23,6 +23,8 @@
  */
 package com.bieitosousa.ad04.Json;
 
+import com.bieitosousa.ad04.Franquicia;
+import com.bieitosousa.ad04.HibernateUtil;
 import java.util.List;
 
 /**
@@ -30,7 +32,7 @@ import java.util.List;
  * @author bieito
  */
 public class Provincias {
-
+    HibernateUtil h = HibernateUtil.getInstance();
     private List<Provincia> provincias = null;
 
     public void setProvincias(List<Provincia> provincias) {
@@ -39,14 +41,16 @@ public class Provincias {
 
     public List<Provincia> getProvincias() {
      for (Provincia p : provincias){
-       // insertar provincia.
-         System.out.println("En Lista mostrabdo "+p.toString());
-         System.out.println("En Lista getNOme "+p.getNome());
-         System.out.println("En Lista get id "+p.getId());
-      if(! p.insert()){
-          System.out.println("Error .. O SE HAN INSERTADO PROVINCIAS");
-      }
+ 
+        if (h.add(p)) {
+            System.out.println("[_SI_] se a AÑADIDO provincia [" + p.toString() + "] a la Franquicia ");
+        
+        } else {
+            System.out.println("[_NO_] se a AÑADIDO provincia [" + p.toString() + "] a la Franquicia  ");
+   
         }
+    }
+     
         return this.provincias;
     }
 

@@ -22,62 +22,89 @@
  * THE SOFTWARE.
  */
 package com.bieitosousa.ad04;
+
 /**
  *
  * @author bieito
  */
 //import  com.bieitosousa.ad03_db.Json.JSonMake;
-import  com.bieitosousa.ad04.Json.JSonMake;
+
+import com.bieitosousa.ad04.Json.JSonMake;
 import com.bieitosousa.ad04.Json.Provincia;
+import java.util.List;
 //import com.bieitosousa.ad03_db.Json.Provincia;
 import java.util.Properties;
 import org.hibernate.HibernateException;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.cfg.Environment;
+import org.hibernate.exception.ConstraintViolationException;
+import org.hibernate.query.Query;
 import org.hibernate.service.ServiceRegistry;
 
 public class HibernateUtil {
-    private static SessionFactory sessionFactory;
-    
+
+    static SessionFactory sessionFact = null;
+    static Session session = null;
+    static Transaction tran = null;
+    private static HibernateUtil hu;
+    private static final SessionFactory sessionFactoryBuid = startSessionFactory();
+
+    private HibernateUtil() {
+
+    }
+
+    public static HibernateUtil getInstance() {
+        if (hu == null) {
+            hu = new HibernateUtil();
+        }
+        return hu;
+    }
+
+    public static SessionFactory getSessionFactory() {
+        return getInstance().sessionFactoryBuid;
+    }
+
     //Este método devolve a sesión para poder facer operacións coa base de datos
-    public static SessionFactory getSessionFactory(){
-        
+    private static SessionFactory startSessionFactory() {
+        SessionFactory sessionFactory = null;
         //Se a sesion non se configurou, creamolo
-        if(sessionFactory == null){
-            try{
+        if (sessionFactoryBuid == null) {
+            try {
                 Configuration conf = new Configuration();
-                
+
                 //Engadimos as propiedades
                 Properties settings = new Properties();
-                
+
                 //Indicamos o conector da base de datos que vamos a usar
 //                settings.put(Environment.DRIVER,"com.mysql.cj.jdbc.Driver");
-                Object put = settings.put(Environment.DRIVER,JSonMake.getHibernate().getDriver());
-                
+                Object put = settings.put(Environment.DRIVER, JSonMake.getHibernate().getDriver());
+
                 //Indicamos a localización da base de datos que vamos a utilizar
 //                settings.put(Environment.URL,"jdbc:mysql://192.168.56.101:3306/hibernate");
-                settings.put(Environment.URL,"jdbc:mysql://"+JSonMake.getDbConnection().getAddress()+":"+JSonMake.getDbConnection().getPort()+"/"+JSonMake.getDbConnection().getName());
-                
+                settings.put(Environment.URL, "jdbc:mysql://" + JSonMake.getDbConnection().getAddress() + ":" + JSonMake.getDbConnection().getPort() + "/" + JSonMake.getDbConnection().getName());
+
                 //Indicamos o usuario da base de datos con cal nos vamos conectar e o seu contrasinal
 //                settings.put(Environment.USER,"userhibernate");
-                settings.put(Environment.USER,JSonMake.getDbConnection().getUser());
+                settings.put(Environment.USER, JSonMake.getDbConnection().getUser());
 //                settings.put(Environment.PASS,"abc123.");
-                settings.put(Environment.PASS,JSonMake.getDbConnection().getPassword());
-                
+                settings.put(Environment.PASS, JSonMake.getDbConnection().getPassword());
+
                 //Indicamos o dialecto que ten que usar Hibernate 
 //                settings.put(Environment.DIALECT,"org.hibernate.dialect.MySQL5Dialect");
-                settings.put(Environment.DIALECT,JSonMake.getHibernate().getDialect());
-                
+                settings.put(Environment.DIALECT, JSonMake.getHibernate().getDialect());
+
                 //Indicamos que se as táboas todas se borren e se volvan crear
                 settings.put(Environment.HBM2DDL_AUTO, JSonMake.getHibernate().getHBM2DDL_AUTO());
-                
+
                 //Indicamos que se mostre as operacións SQL que Hibernate leva a cabo
 //                settings.put(Environment.SHOW_SQL, "true");
                 settings.put(Environment.SHOW_SQL, JSonMake.getHibernate().getSHOW_SQL());
                 conf.setProperties(settings);
-                
+
                 //Engaidmos aquelas clases nas que queremos facer persistencia
                 conf.addAnnotatedClass(Cliente.class);
                 conf.addAnnotatedClass(Provincia.class);
@@ -87,20 +114,133 @@ public class HibernateUtil {
                 conf.addAnnotatedClass(Tienda.class);
                 ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder().applySettings(conf.getProperties()).build();
                 sessionFactory = conf.buildSessionFactory(serviceRegistry);
-            }catch(HibernateException e){
+
+            } catch (ConstraintViolationException ex) {
+                System.out.println("valores introducidos incorectamente " + ex.toString());
+
+            } catch (HibernateException e) {
                 e.printStackTrace();
+
             }
         }
         return sessionFactory;
-        
+
     }
 
-    static boolean getSession() {
-        if (sessionFactory == null){
-             sessionFactory = getSessionFactory();
+    public <T> boolean view(String consulta, Class<T> c) {
+        try {
+
+            if ((session = sessionFactoryBuid.openSession()) != null) {
+                List<T> objList = (List< T>) session.createQuery(consulta, c).getResultList();
+                for (Object aux : objList) {
+                    System.out.println(aux.toString());
+                }
+                session.close();
+            }
+
+        } catch (Exception e) {
+            System.out.println("Error Global: ADD{" + c.toString() + "} Mensaje de Error : [  " + e.toString() + "]");
+            return false;
+        } finally {
+            session.close();
         }
-      if (sessionFactory == null)return false;
-              else return true;
+        return false;
     }
-    
+
+    public <T> List<T> get(String consulta, Class<T> c) {
+        List<T> objList = null;
+        try {
+            if ((session = sessionFactoryBuid.openSession()) != null) {
+                objList = (List< T>) session.createQuery(consulta, c).getResultList();
+            }
+        } catch (Exception e) {
+            System.out.println("Error Global: ADD{" + c.toString() + "} Mensaje de Error : [  " + e.toString() + "]");
+
+        } finally {
+            session.close();
+        }
+        return objList;
+    }
+
+    public boolean add(Object obj) {
+        try {
+            //Collemos a sesión de Hibernate
+
+            if ((session = sessionFactoryBuid.openSession()) != null) {
+                //Comenzamos unha transacción
+                if ((tran = session.beginTransaction()) != null) {
+                    //Gardamos o equipo
+                    session.save(obj);
+                    //Facemos un commit da transacción
+                    tran.commit();
+
+                    return true;
+                }
+            }
+        } catch (Exception e) {
+            if (tran != null) {
+                tran.rollback();
+            }
+            System.out.println("Error Global: ADD{" + obj.toString() + "} Mensaje de Error : [  " + e.toString() + "]");
+            return false;
+        } finally {
+            session.close();
+        }
+        return false;
+    }
+
+    public boolean delete(Object obj) {
+        try {
+            //Collemos a sesión de Hibernate
+
+            if ((session = sessionFactoryBuid.openSession()) != null) {
+                //Comenzamos unha transacción
+                if ((tran = session.beginTransaction()) != null) {
+                    //Gardamos o equipo
+                    session.delete(obj);
+                    //Facemos un commit da transacción
+                    tran.commit();
+                    session.close();
+                    return true;
+                }
+            }
+        } catch (Exception e) {
+            if (tran != null) {
+                tran.rollback();
+            }
+            System.out.println("Error Global: ADD{" + obj.toString() + "} Mensaje de Error : [  " + e.toString() + "]");
+            return false;
+        } finally {
+            session.close();
+        }
+        return false;
+    }
+
+    public boolean update(Object obj) {
+        try {
+            //Collemos a sesión de Hibernate
+            if ((session = sessionFactoryBuid.openSession()) != null) {
+                //Comenzamos unha transacción
+                if ((tran = session.beginTransaction()) != null) {
+                    //Gardamos o equipo
+                    session.update(obj);
+                    //Facemos un commit da transacción
+                    tran.commit();
+                    session.close();
+                    return true;
+                }
+            }
+
+        } catch (Exception e) {
+            if (tran != null) {
+                tran.rollback();
+            }
+            System.out.println("Error Global: ADD{" + obj.toString() + "} Mensaje de Error : [  " + e.toString() + "]");
+            return false;
+        } finally {
+            session.close();
+        }
+        return false;
+    }
+
 }

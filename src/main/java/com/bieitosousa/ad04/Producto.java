@@ -23,35 +23,58 @@
  */
 package com.bieitosousa.ad04;
 
+import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 import javax.persistence.Column;
+import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 /**
  *
  * @author bieito
  */
-public class Producto {
+@Entity
+@Table(name = "PRODUCTO")
+public class Producto implements Serializable{
 
-      @Id
-@Column (name="PRODUCTO_id")  
-    private int id = -1;
-@Column (name="PRODUCTO_name")  
+    private Set<TiendaProducto> tiendaProducto = new HashSet<TiendaProducto>();
 
-      private String name;
-@Column (name="PRODUCTO_price")  
+    @Id
+    @Column(name = "PRODUCTO_id")
+    private int id;
+    @Column(name = "PRODUCTO_name")
+
+    private String name;
+    @Column(name = "PRODUCTO_price")
 
     private float price;
-@Column (name="PRODUCTO_description")  
+    @Column(name = "PRODUCTO_description")
 
     private String description;
-@Column (name="TIENDAPRODUCTO_id")  
+    @Column(name = "TIENDAPRODUCTO_id")
 
     private int stock;
+
+    @OneToMany(mappedBy = "producto")
+    public Set<TiendaProducto> getTiendaProducto() {
+        return tiendaProducto;
+    }
+
+    public void addTiendaProducto(TiendaProducto tiendaProducto) {
+        this.tiendaProducto.add(tiendaProducto);
+    }
+
+    public void setTiendaProducto(Set<TiendaProducto> tiendaProducto) {
+        this.tiendaProducto = tiendaProducto;
+    }
 
     public Producto(String name, float price, String description) {
         this.name = name;
@@ -112,8 +135,6 @@ public class Producto {
         return "Producto{ id=" + id + "name=" + name + ", price=" + price + ", description=" + description + '}';
     }
 
- 
-
     @Override
     public int hashCode() {
         int hash = 7;
@@ -144,17 +165,15 @@ public class Producto {
     //      ==== OPERACIONES LECTURA  SOBRE DB ======== \\
     /**
      * ************************************************************
-     * Recupera el id del Objeto : con una conslta en la DB  
-     ***************************************************************
+     * Recupera el id del Objeto : con una conslta en la DB
+     * **************************************************************
      */
     private void cargarId() {
-       
+
     }
 
     private void cargarStock(Tienda t) {
-        
+
     }
 
-    
 }
-
