@@ -33,6 +33,8 @@ import java.util.Objects;
 import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -44,26 +46,27 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "PRODUCTO")
 public class Producto implements Serializable{
-
+    @OneToMany(mappedBy = "producto")
     private Set<TiendaProducto> tiendaProducto = new HashSet<TiendaProducto>();
 
     @Id
     @Column(name = "PRODUCTO_id")
+      @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
-    @Column(name = "PRODUCTO_name")
+    @Column(name = "PRODUCTO_name", nullable=false, unique = true)
 
     private String name;
-    @Column(name = "PRODUCTO_price")
+    @Column(name = "PRODUCTO_price",nullable=false)
 
     private float price;
-    @Column(name = "PRODUCTO_description")
+    @Column(name = "PRODUCTO_description",nullable=false)
 
     private String description;
-    @Column(name = "TIENDAPRODUCTO_id")
+    @Column(name = "PRODUCTO_stock")
 
     private int stock;
 
-    @OneToMany(mappedBy = "producto")
+   
     public Set<TiendaProducto> getTiendaProducto() {
         return tiendaProducto;
     }
@@ -75,7 +78,7 @@ public class Producto implements Serializable{
     public void setTiendaProducto(Set<TiendaProducto> tiendaProducto) {
         this.tiendaProducto = tiendaProducto;
     }
-
+public Producto(){}
     public Producto(String name, float price, String description) {
         this.name = name;
         this.price = price;

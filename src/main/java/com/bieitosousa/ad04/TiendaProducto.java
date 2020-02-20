@@ -45,14 +45,20 @@ import javax.persistence.TemporalType;
 @Table(name = "TIENDAPRODUCTO")
 
 public class TiendaProducto implements Serializable  {
-    private int id;
-	private Tienda tienda;
-	private Producto producto;
-        private int stock;
-    
-    @Id
+       @Id
     @Column (name="TIENDAPRODUCTO_id") 
     @GeneratedValue(strategy=GenerationType.AUTO)
+    private int id;
+           @ManyToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name = "TIENDA_ID")	
+	private Tienda tienda;
+               @ManyToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name = "PRODUCTO_ID")
+	private Producto producto;
+               @Column(name = "TIENDAPRODUCTO_stock")
+        private int stock;
+    
+
     public int getId(){
     return id;
     } 
@@ -61,8 +67,7 @@ public class TiendaProducto implements Serializable  {
 		this.id = id;
 	}
     
-    @ManyToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name = "TIENDA_ID")	
+
 	public Tienda getTienda() {
 		return tienda;
 	}
@@ -70,8 +75,7 @@ public class TiendaProducto implements Serializable  {
         public void setTienda(Tienda tienda) {
 		this.tienda = tienda;
 	}
-    @ManyToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name = "PRODUCTO_ID")	
+	
 	public Producto getProducto() {
 		return producto;
 	}
@@ -80,7 +84,7 @@ public class TiendaProducto implements Serializable  {
 		this.producto = producto;
 	}
         
-        @Column(name = "TIENDAPRODUCTO_stock")
+        
 	public int getStock() {
 		return stock;
 	}

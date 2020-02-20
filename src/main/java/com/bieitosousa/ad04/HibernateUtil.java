@@ -112,6 +112,8 @@ public class HibernateUtil {
                 conf.addAnnotatedClass(Franquicia.class);
                 conf.addAnnotatedClass(Producto.class);
                 conf.addAnnotatedClass(Tienda.class);
+                conf.addAnnotatedClass(TiendaEmpleado.class);
+                conf.addAnnotatedClass(TiendaProducto.class);
                 ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder().applySettings(conf.getProperties()).build();
                 sessionFactory = conf.buildSessionFactory(serviceRegistry);
 

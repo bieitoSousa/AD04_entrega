@@ -30,6 +30,8 @@ import java.util.Objects;
 import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -42,20 +44,23 @@ import javax.persistence.Table;
 @Table(name = "EMPLEADO")
 
 public class Empleado implements Serializable {
-
+    @OneToMany(mappedBy = "empleado")
     private Set<TiendaEmpleado> tiendaEmpleado = new HashSet<TiendaEmpleado>();
 
     @Id
     @Column(name = "EMPLEADO_id")
+      @GeneratedValue(strategy = GenerationType.AUTO)
     private int id ;
-    @Column(name = "EMPLEADO_name")
+    @Column(name = "EMPLEADO_name", nullable=false)
     private String name;
-    @Column(name = "EMPLEADO_apellido")
+    @Column(name = "EMPLEADO_apellido", nullable=false)
     private String apellido;
     @Column(name = "EMPLEADO_nHoras")
-    private float nHoras = (float) -1;
+    private float nHoras ;
+      @Column(name = "EMPLEADO_nomCompleto", nullable=false, unique = true)
+    private String nomCompleto;
 
-    @OneToMany(mappedBy = "empleado")
+    //@OneToMany(mappedBy = "empleado")
     public Set<TiendaEmpleado> getTiendaEmpleado() {
         return tiendaEmpleado;
     }
@@ -67,10 +72,11 @@ public class Empleado implements Serializable {
     public void setTiendaEmpleado(Set<TiendaEmpleado> tiendaEmpleado) {
         this.tiendaEmpleado = tiendaEmpleado;
     }
-
+public Empleado(){}
     public Empleado(String name, String apellido) {
         this.name = name;
         this.apellido = apellido;
+        this.nomCompleto=name+apellido;
     }
 
     public int getId() {

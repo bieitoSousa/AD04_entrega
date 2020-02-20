@@ -42,15 +42,20 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "TIENDAEMPLEADO")
 public class TiendaEmpleado implements Serializable {
-
-    private int id;
-    private Tienda tienda;
-    private Empleado empleado;
-    private float nhora;
-
-    @Id
+     @Id
     @Column(name = "TIENDAEMPLEADO_id")
     @GeneratedValue(strategy = GenerationType.AUTO)
+    private int id;
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "TIENDA_ID")
+    private Tienda tienda;
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "EMPLEADO_ID")
+    private Empleado empleado;
+    @Column(name = "TIENDAEMPLEADO_nhora")
+    private float nhora;
+
+   
 
     public int getId() {
         return id;
@@ -60,8 +65,7 @@ public class TiendaEmpleado implements Serializable {
         this.id = id;
     }
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "TIENDA_ID")
+
     public Tienda getTienda() {
         return tienda;
     }
@@ -70,8 +74,7 @@ public class TiendaEmpleado implements Serializable {
         this.tienda = tienda;
     }
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "EMPLEADO_ID")
+
     public Empleado getEmpleado() {
         return empleado;
     }
@@ -80,7 +83,7 @@ public class TiendaEmpleado implements Serializable {
         this.empleado = empleado;
     }
 
-    @Column(name = "TIENDAEMPLEADO_nhora")
+    
     public float getNhora() {
         return nhora;
     }

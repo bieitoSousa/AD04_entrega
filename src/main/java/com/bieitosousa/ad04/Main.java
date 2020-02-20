@@ -141,12 +141,12 @@ public class Main {
      f.addTienda(ti4);
 
 //    // VER CLIENTES
-
+   f.viewProvincia();
     f.viewCliente();
     f.viewEmpleado();
     f.viewProducto();
     f.viewTienda();
-    f.viewProvincia();
+ 
     
 //     // ELIMNAR CLIENTE
 //    Cliente.delete(cl2);

@@ -49,14 +49,17 @@ import javax.persistence.*;
 @Table(name = "TIENDA")
 public class Tienda implements Serializable{
 
-    private Franquicia f = null;
+//    private Franquicia f = null;
     private HashMap<String, Producto> mapProd = new HashMap<String, Producto>();
     private HashMap<String, Empleado> mapEmp = new HashMap<String, Empleado>();
-    private boolean opStock = true;
-    private boolean opHoras = true;
+
+    @OneToMany(mappedBy = "tienda")
     private Set<TiendaProducto> tiendaProducto = new HashSet<TiendaProducto>();
-    private Set<Producto> productos = new HashSet<Producto>();
-    private Set<Empleado> empleados = new HashSet<Empleado>();
+//    @OneToMany(mappedBy = "tienda")
+//    private Set<Producto> productos = new HashSet<Producto>();
+//     @OneToMany(mappedBy = "tienda")
+//    private Set<Empleado> empleados = new HashSet<Empleado>();
+      @OneToMany(mappedBy = "tienda")
     private Set<TiendaEmpleado> tiendaEmpleado = new HashSet<TiendaEmpleado>();
 
     @Id
@@ -68,27 +71,28 @@ public class Tienda implements Serializable{
     @ManyToOne
     @JoinColumn(name = "PROVINCIA_id")
     private Provincia provincia;
-    @Column(name = "TIENDA_ciudad")
+    @Column(name = "TIENDA_ciudad", nullable=false, unique = true)
     private String ciudad;
 
-    @OneToMany(mappedBy = "tienda")
+    
     public Set<TiendaProducto> getTiendaProducto() {
         return tiendaProducto;
     }
-    @OneToMany(mappedBy = "tienda")
-    public Set<Producto> getProducto() {
-        return productos;
-    }
+//   
+//    public Set<Producto> getProducto() {
+//        return productos;
+//    }
 
-    @OneToMany(mappedBy = "tienda")
+    
     public Set<TiendaEmpleado> getTiendaEmpleado() {
         return tiendaEmpleado;
     }
-    @OneToMany(mappedBy = "tienda")
-    public Set<Empleado> getEmpleado() {
-        return empleados;
-    }
+   
+//    public Set<Empleado> getEmpleado() {
+//        return empleados;
+//    }
 
+    public Tienda(){}
     public Tienda(String name, Provincia provincia, String ciudad) {
         this.name = name;
         this.provincia = provincia;
@@ -103,17 +107,18 @@ public class Tienda implements Serializable{
         this.tiendaProducto.add(tp);
     }
 
-    public int getProductStock(Producto producto) {
-        int stock = -1;
-        if (this.productos.contains(producto)) {
-            for (TiendaProducto tp : this.tiendaProducto) {
-                if (tp.getProducto().equals(producto)) {
-                    return (stock = tp.getStock());
-                }
-            }
-        }
-        return stock;
-    }
+//    public int getProductStock(Producto producto) {
+//        int stock = -1;
+//        if (this.productos.contains(producto)) {
+//            for (TiendaProducto tp : this.tiendaProducto) {
+//                if (tp.getProducto().equals(producto)) {
+//                    return (stock = tp.getStock());
+//                }
+//            }
+//        }
+//        return stock;
+//    }
+    
     public void addEmpeado(Empleado empleado, float nhoras) {
         TiendaEmpleado te = new TiendaEmpleado();
         te.setEmpleado(empleado);
@@ -122,17 +127,17 @@ public class Tienda implements Serializable{
         this.tiendaEmpleado.add(te);
     }
 
-    public float getNhora(Empleado empleado) {
-        float nhora = -1;
-        if (this.empleados.contains(empleado)) {
-            for (TiendaEmpleado te : this.tiendaEmpleado) {
-                if (te.getEmpleado().equals(empleado)) {
-                    return (nhora = te.getNhora());
-                }
-            }
-        }
-        return nhora;
-    }
+//    public float getNhora(Empleado empleado) {
+//        float nhora = -1;
+//        if (this.empleados.contains(empleado)) {
+//            for (TiendaEmpleado te : this.tiendaEmpleado) {
+//                if (te.getEmpleado().equals(empleado)) {
+//                    return (nhora = te.getNhora());
+//                }
+//            }
+//        }
+//        return nhora;
+//    }
 
     public void addTiendaProducto(TiendaProducto tiendaProducto) {
         this.tiendaProducto.add(tiendaProducto);
@@ -159,14 +164,14 @@ public class Tienda implements Serializable{
      *
      **************************************************************
      */
-    public Franquicia getFranquicia() {
-        if (f == null) {
-            f = Franquicia.getInstance();
-//        }else if (!f.mapTienda.containsKey(this.name)){
-//            f.addTienda(this);
-        }
-        return f;
-    }
+//    public Franquicia getFranquicia() {
+//        if (f == null) {
+//            f = Franquicia.getInstance();
+////        }else if (!f.mapTienda.containsKey(this.name)){
+////            f.addTienda(this);
+//        }
+//        return f;
+//    }
 
     public void setId(int id) {
         this.id = id;
