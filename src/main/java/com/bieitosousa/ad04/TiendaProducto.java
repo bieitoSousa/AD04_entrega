@@ -92,15 +92,11 @@ public class TiendaProducto implements Serializable  {
 	public void setStock(int stock) {
 		this.stock = stock;
 	}
+
+    @Override
+    public String toString() {
+        return "TiendaProducto{" + "tienda=[" + tienda.toString() + "], producto=[" + producto.toString() + "], stock=[" + stock + "]"+'}';
+    }
         
-//    @ManyToOne
-//    @JoinColumn (name="TIENDA_id")   
-//    private Tienda tienda;
-//    
-//    @ManyToOne
-//    @JoinColumn (name="PRODUCTO_id")   
-//    private Producto producto;
-//    
-//    @Column (name="stock")   
-//    private int stock;
+
 }

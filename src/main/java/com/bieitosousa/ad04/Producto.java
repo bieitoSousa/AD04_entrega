@@ -62,9 +62,7 @@ public class Producto implements Serializable{
     @Column(name = "PRODUCTO_description",nullable=false)
 
     private String description;
-    @Column(name = "PRODUCTO_stock")
 
-    private int stock;
 
    
     public Set<TiendaProducto> getTiendaProducto() {
@@ -85,29 +83,8 @@ public Producto(){}
         this.description = description;
     }
 
-    public int getStock() {
-        return stock;
-    }
 
-    public int getStock(Tienda t) {
-        cargarStock(t);
-        return stock;
-    }
-
-    public void setStock(int stock) {
-        this.stock = stock;
-    }
-
-    public int getId() {
-        if (id == -1) {
-            cargarId();
-        }
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
+ 
 
     public String getName() {
         return name;
@@ -165,18 +142,5 @@ public Producto(){}
         return true;
     }
 
-    //      ==== OPERACIONES LECTURA  SOBRE DB ======== \\
-    /**
-     * ************************************************************
-     * Recupera el id del Objeto : con una conslta en la DB
-     * **************************************************************
-     */
-    private void cargarId() {
-
-    }
-
-    private void cargarStock(Tienda t) {
-
-    }
-
+   
 }

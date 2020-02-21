@@ -134,9 +134,11 @@ public class HibernateUtil {
 
             if ((session = sessionFactoryBuid.openSession()) != null) {
                 List<T> objList = (List< T>) session.createQuery(consulta, c).getResultList();
+                         System.out.println("|| ==== LISTA DE  ["+c.getSimpleName()+"] EN LA FRANQUICIA === ||");
                 for (Object aux : objList) {
                     System.out.println(aux.toString());
                 }
+                 System.out.println(" || =========================================================== ||");
                 session.close();
             }
 

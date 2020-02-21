@@ -30,7 +30,10 @@ import java.io.FileNotFoundException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import javax.persistence.OneToMany;
 
 /**
  *
@@ -38,46 +41,36 @@ import java.util.List;
  */
 public class Franquicia {
 
+    // acceso a hibernate
     HibernateUtil h = HibernateUtil.getInstance();
+    // Mapas donde guardamos los objetos
     HashMap<String, Tienda> mapTienda = new HashMap<String, Tienda>();
-    HashMap<String, Producto> mapProd = new HashMap<String, Producto>();
-    HashMap<String, Empleado> mapEmp = new HashMap<String, Empleado>();
-    HashMap<String, Cliente> mapCli = new HashMap<String, Cliente>();
-    List<Provincia> listProv = new ArrayList<Provincia>();
+    HashMap<String, Producto> mapProducto = new HashMap<String, Producto>();
+    HashMap<String, Empleado> mapEmpleado = new HashMap<String, Empleado>();
+    HashMap<String, Cliente> mapCliente = new HashMap<String, Cliente>();
+    HashMap<Integer, Provincia> mapProvincia = new HashMap<Integer, Provincia>();
+    // validar  true se han producido cambios en la DB en los registros pertinentes
+    boolean operacionTienda = true;
+    boolean operacionProducto = true;
+    boolean operacionEmpleado = true;
+    boolean operacionCliente = true;
+    // acceso a franquicia singleton
     private static Franquicia f = null;
-    private String name;
-    protected static boolean opCli = true;//operaciones de escritura sobre Cliente
-    protected static boolean opTi = true;//operaciones de escritura sobre Tienda
-    protected static boolean opEmp = true;//operaciones de escritura sobre Empleado
-    protected static boolean opProd = true;//operaciones de escritura sobre Producto
-    protected static boolean opProv = true;//operaciones de escritura sobre Provincias
-    private static boolean tablaProvinciasState = false;
+    // nombre de franquicia por defecto
+    private String name = "Mi Franquicia";
 
-    public static Franquicia getInstance()  {
+    //instancia franquicia singleton
+    public static Franquicia getInstance() {
         if (f == null) {
             f = new Franquicia();
         }
         return f;
     }
 
-    public Franquicia()  {
-        if ((listProv = CargarProvincias()) == null) {
+    // constructor cargando las Provincias
+    public Franquicia() {
+        if ((mapProvincia = cargarProvincias()) == null) {
             System.err.println("ERROR : NO SE HAN CARGADO LA PROVINCIAS");
-        }
-    }
-
-    private List<Provincia> CargarProvincias()  {// si estan cargadas menos de 50 Provincias
-        List<Provincia> list = h.get("from Provincia", Provincia.class);
-        if (list.size() == 25) {
-            return list;
-        } else if (list.size() == 0) { // carga las provincias 
-            if (JSonMake.CargarFileProvincias()) {
-                return h.get("from Provincia", Provincia.class);
-            } else {
-                return null;
-            }
-        } else {
-            return null;
         }
     }
 
@@ -92,70 +85,49 @@ public class Franquicia {
      */
     @Override
     public String toString() {
-        return "Franquicia{" + "mapTienda=" + mapTienda + ", mapProd=" + mapProd + ", mapEmp=" + mapEmp + ", mapCli=" + mapCli + ", name=" + name + '}';
+        return "Franquicia{" + "mapTienda=" + mapTienda + ", mapProd=" + mapProducto + ", mapEmp=" + mapEmpleado + ", mapCli=" + mapCliente + ", name=" + name + '}';
     }
 
     /**
      * ************************************************************
-     * METODOS GET # evalua op{name} : determina si hubo operaciones de
-     * escritura en la DB # true : Carga los datos de la DB. # false : Carga los
-     * datos de la memoria. = getMapEmp = getMapCli = getMapProd = getMapTienda
+     * METODOS GET/SET
      *
-     ***************************************************************
+     **************************************************************
      */
-//    public HashMap<String, Tienda> getMapTienda() {
-//        if (opTi) {
-//            cargarTiendas();
-//        }
-//        return mapTienda;
-//    }
-//    public ArrayList<String> getMapProvincia() {
-//        if (opProv) {
-//            cargarProv();
-//        }
-//        return listProv;
-//    }
-//    public HashMap<String, Producto> getMapProd() {
-//        if (opProd) {
-//            cargarProductos();
-//        }
-//        return mapProd;
-//    }
-//
-//    public HashMap<String, Empleado> getMapEmp() {
-//        if (opEmp) {
-//            cargarEmpleados();
-//        }
-//        return mapEmp;
-//    }
-//
-//    public HashMap<String, Cliente> getMapCli() {
-//        if (opCli) {
-//            cargarClientes();
-//        }
-//        return mapCli;
-//    }
-    /**
-     * ************************************************************
-     * METODOS SET # guarda los datos en memoria = setMapEmp = setMapCli =
-     * setMapProd = setMapTienda
-     *
-     ***************************************************************
-     */
+    public HashMap<String, Tienda> getMapTienda() {
+        if (operacionTienda) {
+            return mapTienda = cargarTienda();
+        } else {
+            return mapTienda;
+        }
+    }
+
+    public HashMap<String, Producto> getMapProducto() {
+        return mapProducto = cargarProducto();
+    }
+
+    public HashMap<String, Empleado> getMapEmpleado() {
+        return mapEmpleado = cargarEmpleado();
+    }
+
+    public HashMap<String, Cliente> getMapCliente() {
+        return mapCliente = cargarCliente();
+    }
+
     public void setMapTienda(HashMap<String, Tienda> mapTienda) {
         this.mapTienda = mapTienda;
     }
 
     public void setMapProd(HashMap<String, Producto> mapProd) {
-        this.mapProd = mapProd;
+        this.mapProducto = mapProd;
     }
 
     public void setMapEmp(HashMap<String, Empleado> mapEmp) {
-        this.mapEmp = mapEmp;
+        this.mapEmpleado = mapEmp;
     }
 
     public void setListCli(HashMap<String, Cliente> mapCli) {
-        this.mapCli = mapCli;
+        this.mapCliente = mapCli;
     }
 
     /**
@@ -168,6 +140,8 @@ public class Franquicia {
      */
     public void addCliente(Cliente cliente) {
         if (h.add(cliente)) {
+            this.operacionCliente = true;
+
             System.out.println("[_SI_] se a AÑADIDO cliente [" + cliente.toString() + "] a la Franquicia ");
         } else {
             System.out.println("[_NO_] se a AÑADIDO cliente [" + cliente.toString() + "] a la Franquicia  ");
@@ -176,15 +150,50 @@ public class Franquicia {
 
     public void deleteCliente(Cliente cliente) {
         if (h.delete(cliente)) {
+            this.operacionCliente = true;
+
             System.out.println("[_SI_] se a ELIMINADO cliente [" + cliente.toString() + "] a la Franquicia ");
         } else {
             System.out.println("[_NO_] se a ELIMINADO cliente [" + cliente.toString() + "] a la Franquicia  ");
         }
 
     }
+    
+       public boolean deleteCliente(String nameCliente) {
+        Cliente cliente;
+        if ((cliente = mapCliente.get(nameCliente)) != null) {
+            if (h.delete(cliente)) {
+                this.operacionCliente = true;
+                System.out.println("[_SI_] se a ELIMINADO cliente [" + cliente.toString() + "] a la Franquicia ");
+                return true;
+            } else {
+                System.out.println("[_NO_] se a ELIMINADO cliente [" + cliente.toString() + "] a la Franquicia  ");
+                return false;
+            }
+        } else {
+            return false;
+        }
+    } 
+       public boolean updateCliente(String nameCliente) {
+        Cliente cliente;
+        if ((cliente = mapCliente.get(nameCliente)) != null) {
+            if (h.update(cliente)) {
+                this.operacionCliente = true;
+                System.out.println("[_SI_] se a ELIMINADO cliente [" + cliente.toString() + "] a la Franquicia ");
+                return true;
+            } else {
+                System.out.println("[_NO_] se a ELIMINADO cliente [" + cliente.toString() + "] a la Franquicia  ");
+                return false;
+            }
+        } else {
+            return false;
+        }
+    } 
 
     public void updateCliente(Cliente cliente) {
         if (h.update(cliente)) {
+            this.operacionCliente = true;
+
             System.out.println("[_SI_] se a MODIFICADO cliente [" + cliente.toString() + "] a la Franquicia ");
         } else {
             System.out.println("[_NO_] se a MODIFICADO cliente [" + cliente.toString() + "] a la Franquicia  ");
@@ -231,6 +240,8 @@ public class Franquicia {
 
     public void addProducto(Producto producto) {
         if (h.add(producto)) {
+            this.operacionProducto = true;
+
             System.out.println("[_SI_] se a AÑADIDO producto [" + producto.toString() + "] a la Franquicia ");
         } else {
             System.out.println("[_NO_] se a AÑADIDO producto [" + producto.toString() + "] a la Franquicia  ");
@@ -239,15 +250,51 @@ public class Franquicia {
 
     public void deleteProducto(Producto producto) {
         if (h.delete(producto)) {
+            this.operacionProducto = true;
+
             System.out.println("[_SI_] se a ELIMINADO producto [" + producto.toString() + "] a la Franquicia ");
         } else {
             System.out.println("[_NO_] se a ELIMINADO producto [" + producto.toString() + "] a la Franquicia  ");
         }
 
     }
+    
+       public boolean deleteProducto(String nameProducto) {
+        Producto producto;
+        if ((producto = mapProducto.get(nameProducto)) != null) {
+            if (h.delete(producto)) {
+                this.operacionProducto = true;
+                System.out.println("[_SI_] se a ELIMINADO producto [" + producto.toString() + "] a la Franquicia ");
+                return true;
+            } else {
+                System.out.println("[_NO_] se a ELIMINADO producto [" + producto.toString() + "] a la Franquicia  ");
+                return false;
+            }
+        } else {
+            return false;
+        }
+    } 
+       public boolean updateProducto(String nameProducto) {
+        Producto producto;
+        if ((producto = mapProducto.get(nameProducto)) != null) {
+            if (h.update(producto)) {
+                this.operacionProducto = true;
+                System.out.println("[_SI_] se a ELIMINADO producto [" + producto.toString() + "] a la Franquicia ");
+                return true;
+            } else {
+                System.out.println("[_NO_] se a ELIMINADO producto [" + producto.toString() + "] a la Franquicia  ");
+                return false;
+            }
+        } else {
+            return false;
+        }
+    } 
+    
 
     public void updateProducto(Producto producto) {
         if (h.update(producto)) {
+            this.operacionProducto = true;
+
             System.out.println("[_SI_] se a MODIFICADO producto [" + producto.toString() + "] a la Franquicia ");
         } else {
             System.out.println("[_NO_] se a MODIFICADO producto [" + producto.toString() + "] a la Franquicia  ");
@@ -261,14 +308,19 @@ public class Franquicia {
 
     public void addEmpleado(Empleado empleado) {
         if (h.add(empleado)) {
+            this.operacionEmpleado = true;
+
             System.out.println("[_SI_] se a AÑADIDO empleado [" + empleado.toString() + "] a la Franquicia ");
         } else {
             System.out.println("[_NO_] se a AÑADIDO empleado [" + empleado.toString() + "] a la Franquicia  ");
         }
     }
 
+    
     public void deleteEmpleado(Empleado empleado) {
         if (h.delete(empleado)) {
+            this.operacionEmpleado = true;
+
             System.out.println("[_SI_] se a ELIMINADO empleado [" + empleado.toString() + "] a la Franquicia ");
         } else {
             System.out.println("[_NO_] se a ELIMINADO empleado [" + empleado.toString() + "] a la Franquicia  ");
@@ -276,28 +328,66 @@ public class Franquicia {
 
     }
 
+    public boolean deleteEmpleado(String nameEmpleado) {
+        Empleado empleado;
+        if ((empleado = mapEmpleado.get(nameEmpleado)) != null) {
+            if (h.delete(empleado)) {
+                this.operacionEmpleado = true;
+                System.out.println("[_SI_] se a ELIMINADO empleado [" + empleado.toString() + "] a la Franquicia ");
+                return true;
+            } else {
+                System.out.println("[_NO_] se a ELIMINADO empleado [" + empleado.toString() + "] a la Franquicia  ");
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }    
+    
     public void updateEmpleado(Empleado empleado) {
         if (h.update(empleado)) {
+            this.operacionEmpleado = true;
+
             System.out.println("[_SI_] se a MODIFICADO empleado [" + empleado.toString() + "] a la Franquicia ");
         } else {
             System.out.println("[_NO_] se a MODIFICADO empleado [" + empleado.toString() + "] a la Franquicia  ");
         }
     }
-
+public boolean updateEmpleado(String nameEmpleado) {
+        Empleado empleado;
+        if ((empleado = mapEmpleado.get(nameEmpleado)) != null) {
+            if (h.update(empleado)) {
+                this.operacionEmpleado = true;
+                System.out.println("[_SI_] se a MODIFICADO empleado [" + empleado.toString() + "] a la Franquicia ");
+                return true;
+            } else {
+                System.out.println("[_NO_] se a MODIFICADO empleado [" + empleado.toString() + "] a la Franquicia  ");
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }    
     public boolean viewEmpleado() {
         return h.view("from Empleado", Empleado.class);
 
     }
+
     public void addTienda(Tienda tienda) {
         if (h.add(tienda)) {
+            this.operacionTienda = true;
             System.out.println("[_SI_] se a AÑADIDO tienda [" + tienda.toString() + "] a la Franquicia ");
         } else {
             System.out.println("[_NO_] se a AÑADIDO tienda [" + tienda.toString() + "] a la Franquicia  ");
         }
     }
 
+   
+
     public void deleteTienda(Tienda tienda) {
         if (h.delete(tienda)) {
+            this.operacionTienda = true;
+
             System.out.println("[_SI_] se a ELIMINADO tienda [" + tienda.toString() + "] a la Franquicia ");
         } else {
             System.out.println("[_NO_] se a ELIMINADO tienda [" + tienda.toString() + "] a la Franquicia  ");
@@ -305,17 +395,130 @@ public class Franquicia {
 
     }
 
+ public boolean deleteTienda(String nameTienda) {
+        Tienda tienda;
+        if ((tienda = mapTienda.get(nameTienda)) != null) {
+            if (h.delete(tienda)) {
+                this.operacionTienda = true;
+                System.out.println("[_SI_] se a ELIMINADO tienda [" + tienda.toString() + "] a la Franquicia ");
+                return true;
+            } else {
+                System.out.println("[_NO_] se a ELIMINADO tienda [" + tienda.toString() + "] a la Franquicia  ");
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }    
+    
+    
     public void updateTienda(Tienda tienda) {
         if (h.update(tienda)) {
+            this.operacionTienda = true;
+
             System.out.println("[_SI_] se a MODIFICADO tienda [" + tienda.toString() + "] a la Franquicia ");
         } else {
             System.out.println("[_NO_] se a MODIFICADO tienda [" + tienda.toString() + "] a la Franquicia  ");
         }
     }
 
+     public boolean updateTienda(String nameTienda) {
+        Tienda tienda;
+        if ((tienda = mapTienda.get(nameTienda)) != null) {
+            if (h.update(tienda)) {
+                this.operacionTienda = true;
+                System.out.println("[_SI_] se a MODIFICADO tienda [" + tienda.toString() + "] a la Franquicia ");
+                return true;
+            } else {
+                System.out.println("[_NO_] se a MODIFICADO tienda [" + tienda.toString() + "] a la Franquicia  ");
+                return false;
+            }
+        } else {
+            return false;
+        }
+    } 
+    
     public boolean viewTienda() {
         return h.view("from Tienda", Tienda.class);
 
     }
 
+    /**
+     * * ... METODOS PRIVADOS ... **
+     */
+    /**
+     * ************************************************************
+     * CARGAR -> OBTIENE LOS VALORES DE LOS OBJETOS ATRAVES DE REGISTROS DE LA
+     * DB
+     *
+     **************************************************************
+     */
+    private HashMap<Integer, Provincia> cargarProvincias() {// si estan cargadas menos de 50 Provincias
+        List<Provincia> list = h.get("from Provincia", Provincia.class);
+        if (list.size() == 25) {
+            for (Provincia p : list) {
+                mapProvincia.put(p.getId(), p);
+            }
+
+        } else if (list.size() == 0) { // carga las provincias 
+            if (JSonMake.CargarFileProvincias()) {
+                if ((list = h.get("from Provincia", Provincia.class)).size() == 25) {
+                    for (Provincia p : list) {
+                        mapProvincia.put(p.getId(), p);
+                    }
+                } else {
+                    System.out.println("Provincias no cargadas CORRECTAMENTE");
+                }
+
+            }
+        } else {
+            System.out.println("Provincias no cargadas CORRECTAMENTE");
+        }
+        return mapProvincia;
+
+    }
+
+    private HashMap<String, Tienda> cargarTienda() {
+        List<Tienda> listTienda = h.get("from Tienda", Tienda.class);
+        if (listTienda.size() > 0) {
+            for (Tienda t : listTienda) {
+                mapTienda.put(t.getName(), t);
+            }
+            this.operacionTienda = false;
+        }
+        return mapTienda;
+    }
+
+    private HashMap<String, Producto> cargarProducto() {
+        List<Producto> listProducto = h.get("from Producto", Producto.class);
+        if (listProducto.size() > 0) {
+            for (Producto p : listProducto) {
+                mapProducto.put(p.getName(), p);
+            }
+            this.operacionProducto = false;
+        }
+        return mapProducto;
+    }
+
+    private HashMap<String, Empleado> cargarEmpleado() {
+        List<Empleado> listEmpleado = h.get("from Empleado", Empleado.class);
+        if (listEmpleado.size() > 0) {
+            for (Empleado em : listEmpleado) {
+                mapEmpleado.put(em.getName(), em);
+            }
+            this.operacionEmpleado = false;
+        }
+        return mapEmpleado;
+    }
+
+    private HashMap<String, Cliente> cargarCliente() {
+        List<Cliente> listCliente = h.get("from Cliente", Cliente.class);
+        if (listCliente.size() > 0) {
+            for (Cliente cl : listCliente) {
+                mapCliente.put(cl.getName(), cl);
+            }
+            this.operacionCliente = false;
+        }
+        return mapCliente;
+    }
 }

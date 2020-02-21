@@ -55,8 +55,7 @@ public class Empleado implements Serializable {
     private String name;
     @Column(name = "EMPLEADO_apellido", nullable=false)
     private String apellido;
-    @Column(name = "EMPLEADO_nHoras")
-    private float nHoras ;
+   
       @Column(name = "EMPLEADO_nomCompleto", nullable=false, unique = true)
     private String nomCompleto;
 
@@ -79,17 +78,7 @@ public Empleado(){}
         this.nomCompleto=name+apellido;
     }
 
-    public int getId() {
-        if (id == -1) {
-            cargarId();
-        }
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
+    
     public String getName() {
         return name;
     }
@@ -106,23 +95,14 @@ public Empleado(){}
         this.apellido = apellido;
     }
 
-    public float getnHoras(Tienda t) {
-        cargarHoras(t);
-        return nHoras;
-    }
-
-    public void setnHoras(float nHoras) {
-        this.nHoras = nHoras;
-    }
+   
 
     @Override
     public String toString() {
         return "Empleado{" + "id=" + id + ", name=" + name + ", apellidos=" + apellido + '}';
     }
 
-    public String toString(Tienda t) {
-        return "Empleado{" + "id=" + id + ", name=" + name + ", apellidos=" + apellido + ", nHoras=" + getnHoras(t) + '}';
-    }
+   
 
     @Override
     public int hashCode() {
@@ -151,12 +131,6 @@ public Empleado(){}
         return true;
     }
 
-    private void cargarId() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    private void cargarHoras(Tienda t) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+  
 
 }

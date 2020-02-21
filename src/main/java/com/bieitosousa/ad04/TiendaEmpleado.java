@@ -91,14 +91,12 @@ public class TiendaEmpleado implements Serializable {
     public void setNhora(float nhora) {
         this.nhora = nhora;
     }
-    //    @ManyToOne
-//    @JoinColumn (name="TIENDA_id")   
-//    private Tienda tienda;
-//    
-//    @ManyToOne
-//    @JoinColumn (name="EMPLEADO_id")   
-//    private Cliente cliente;
-//    
-//    @Column (name="nHoras")   
-//    private float nhoras;
+
+    @Override
+    public String toString() {
+        return "TiendaEmpleado{ tienda=[" + tienda.toString() + "], empleado=[" + empleado.toString() + "], nhora=[" + nhora + "]"+'}';
+    }
+ 
+    
+    
 }
