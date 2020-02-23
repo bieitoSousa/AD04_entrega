@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.bieitosousa.ad04;
+package com.bieitosousa.ad04.Data;
 
 import java.io.Serializable;
 import java.util.List;

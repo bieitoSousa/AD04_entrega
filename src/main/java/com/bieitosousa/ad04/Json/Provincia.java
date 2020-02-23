@@ -23,7 +23,7 @@
  */
 package com.bieitosousa.ad04.Json;
 
-import com.bieitosousa.ad04.HibernateUtil;
+import com.bieitosousa.ad04.Data.HibernateUtil;
 import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;

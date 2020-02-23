@@ -21,8 +21,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.bieitosousa.ad04;
+package com.bieitosousa.ad04.Data;
 
+import com.bieitosousa.ad04.Data.Empleado;
+import com.bieitosousa.ad04.Data.HibernateUtil;
 import com.bieitosousa.ad04.Json.Provincia;
 import java.io.Serializable;
 import java.util.HashMap;

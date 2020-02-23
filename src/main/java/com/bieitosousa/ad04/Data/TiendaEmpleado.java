@@ -21,10 +21,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.bieitosousa.ad04;
+package com.bieitosousa.ad04.Data;
 
+import com.bieitosousa.ad04.Data.Empleado;
+import com.bieitosousa.ad04.Json.Provincia;
 import java.io.Serializable;
-import java.util.Date;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -34,69 +35,69 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
 /**
  *
  * @author bieito
  */
 @Entity
-@Table(name = "TIENDAPRODUCTO")
-
-public class TiendaProducto implements Serializable  {
-       @Id
-    @Column (name="TIENDAPRODUCTO_id") 
-    @GeneratedValue(strategy=GenerationType.AUTO)
+@Table(name = "TIENDAEMPLEADO")
+public class TiendaEmpleado implements Serializable {
+     @Id
+    @Column(name = "TIENDAEMPLEADO_id")
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
-           @ManyToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name = "TIENDA_ID")	
-	private Tienda tienda;
-               @ManyToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name = "PRODUCTO_ID")
-	private Producto producto;
-               @Column(name = "TIENDAPRODUCTO_stock")
-        private int stock;
-    
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "TIENDA_ID")
+    private Tienda tienda;
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "EMPLEADO_ID")
+    private Empleado empleado;
+    @Column(name = "TIENDAEMPLEADO_nhora")
+    private float nhora;
 
-    public int getId(){
-    return id;
-    } 
-    
+   
+
+    public int getId() {
+        return id;
+    }
+
     public void setId(int id) {
-		this.id = id;
-	}
+        this.id = id;
+    }
+
+
+    public Tienda getTienda() {
+        return tienda;
+    }
+
+    public void setTienda(Tienda tienda) {
+        this.tienda = tienda;
+    }
+
+
+    public Empleado getEmpleado() {
+        return empleado;
+    }
+
+    public void setEmpleado(Empleado empleado) {
+        this.empleado = empleado;
+    }
+
     
+    public float getNhora() {
+        return nhora;
+    }
 
-	public Tienda getTienda() {
-		return tienda;
-	}
-
-        public void setTienda(Tienda tienda) {
-		this.tienda = tienda;
-	}
-	
-	public Producto getProducto() {
-		return producto;
-	}
-
-        public void setProducto(Producto producto) {
-		this.producto = producto;
-	}
-        
-        
-	public int getStock() {
-		return stock;
-	}
-
-	public void setStock(int stock) {
-		this.stock = stock;
-	}
+    public void setNhora(float nhora) {
+        this.nhora = nhora;
+    }
 
     @Override
     public String toString() {
-        return "TiendaProducto{" + "tienda=[" + tienda.toString() + "], producto=[" + producto.toString() + "], stock=[" + stock + "]"+'}';
+        return "TiendaEmpleado{ tienda=[" + tienda.toString() + "], empleado=[" + empleado.toString() + "], nhora=[" + nhora + "]"+'}';
     }
-        
-
+ 
+    
+    
 }

@@ -21,37 +21,26 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.bieitosousa.ad04.Json;
+package com.bieitosousa.ad04;
 
-import com.bieitosousa.ad04.Data.Franquicia;
-import com.bieitosousa.ad04.Data.HibernateUtil;
-import java.util.List;
+import com.bieitosousa.ad04.Data.*;
+import com.bieitosousa.ad04.Json.*;
 
 /**
  *
  * @author bieito
  */
-public class Provincias {
-    HibernateUtil h = HibernateUtil.getInstance();
-    private List<Provincia> provincias = null;
-
-    public void setProvincias(List<Provincia> provincias) {
-        this.provincias = provincias;
-    }
-
-    public List<Provincia> getProvincias() {
-     for (Provincia p : provincias){
- 
-        if (h.add(p)) {
-            System.out.println("[_SI_] se a AÑADIDO provincia [" + p.toString() + "] a la Franquicia ");
-        
-        } else {
-            System.out.println("[_NO_] se a AÑADIDO provincia [" + p.toString() + "] a la Franquicia  ");
-   
-        }
-    }
-     
-        return this.provincias;
-    }
-
+public class Text {
+    static Franquicia f = Franquicia.getInstance();
+    
+    static Provincia pr = new Provincia(60,"Paco");
+    static Tienda t = new Tienda("a",pr,"b");
+    static Tienda t1 = new Tienda("c",pr,"z");
+    static Tienda t2 = new Tienda("d",pr,"q");
+     public static void main(String[] args) throws Exception {
+     f.addTienda(t);
+     f.addTienda(t1);
+     f.addTienda(t2);
+      
+     }
 }

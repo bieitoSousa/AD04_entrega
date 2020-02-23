@@ -23,10 +23,10 @@
  */
 package com.bieitosousa.ad04;
 
-import com.bieitosousa.ad04.Help.HelpFunctions;
-import com.bieitosousa.ad04.Json.JSonMake;
-import com.bieitosousa.ad04.Json.Provincia;
-import com.bieitosousa.ad04.XML.ReadXML;
+import com.bieitosousa.ad04.Data.*;
+import com.bieitosousa.ad04.Help.*;
+import com.bieitosousa.ad04.Json.*;
+import com.bieitosousa.ad04.XML.*;
 import java.io.File;
 import java.util.InputMismatchException;
 import java.util.List;
@@ -386,6 +386,8 @@ import org.hibernate.query.Query;
             } catch (InputMismatchException e) {
                 System.out.println("Debes insertar un número");
                 reader.next();
+            } catch (Exception e){
+                System.out.println("excepcion : "+e.getMessage());
             }
         }
         reader.close(); // Cerramos el objeto Scanner
@@ -446,6 +448,7 @@ import org.hibernate.query.Query;
     
 
     private static void menuAddTienda() {
+        try{
         boolean s = true;
         String n = "";
         String c = "";
@@ -457,22 +460,27 @@ import org.hibernate.query.Query;
                 break;
             }
              f.viewProvincia();
-            if(( pro = f.mapProvincia.get(( HelpFunctions.inputInt("provincia ? "))))!= null){
              
+           if(( pro = f.getMapProvincia().get(( HelpFunctions.inputInt("provincia ? "))))!= null){
             c = HelpFunctions.inputString("cidade ? ");
             if ("exit".equals(c)) {
                 break;
             }
             if (HelpFunctions.whiteSpace(n) && HelpFunctions.whiteSpace(c) && !f.getMapTienda().containsKey(n) && (pro != null)) {
+                
                 f.addTienda(new Tienda(n, pro, c));
-                t = f.getMapTienda().get(n);
-                if (t != null) {
-                    System.out.print("Se a creado unha tenda:\n" + t.toString());
-                }
+                t=null;
+               if ((t=f.getMapTienda().get(n))!=null){
+                    System.out.println("Se a seleccionado la tienda"+t);
+               }
                 s = false;
             }
         }else{System.out.println("Provincia no valida");}
         }
+    }catch (Exception e){
+            System.out.println("Excepcion ..."+e.getMessage());
+    }
+    
     }
 
     private static void menuSelectTienda() {

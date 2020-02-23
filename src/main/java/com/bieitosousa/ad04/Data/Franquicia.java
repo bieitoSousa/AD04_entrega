@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.bieitosousa.ad04;
+package com.bieitosousa.ad04.Data;
 
 import com.bieitosousa.ad04.Json.JSonMake;
 import com.bieitosousa.ad04.Json.Provincia;
@@ -103,15 +103,34 @@ public class Franquicia {
     }
 
     public HashMap<String, Producto> getMapProducto() {
+        if (operacionProducto) {
         return mapProducto = cargarProducto();
+        } else {
+            return mapProducto;
+        }
     }
 
     public HashMap<String, Empleado> getMapEmpleado() {
+        if (operacionEmpleado) {
         return mapEmpleado = cargarEmpleado();
+        } else {
+            return mapEmpleado;
+        }
     }
 
     public HashMap<String, Cliente> getMapCliente() {
+        if (operacionCliente) {
         return mapCliente = cargarCliente();
+         } else {
+            return mapCliente;
+        }
+    }
+    public HashMap<Integer, Provincia> getMapProvincia() {
+        if (mapProvincia.size()<10) {
+        return mapProvincia = cargarProvincias();
+         } else {
+            return mapProvincia;
+        }
     }
 
     public void setMapTienda(HashMap<String, Tienda> mapTienda) {
@@ -455,7 +474,7 @@ public boolean updateEmpleado(String nameEmpleado) {
      */
     private HashMap<Integer, Provincia> cargarProvincias() {// si estan cargadas menos de 50 Provincias
         List<Provincia> list = h.get("from Provincia", Provincia.class);
-        if (list.size() == 25) {
+        if (list.size() == 52) {
             for (Provincia p : list) {
                 mapProvincia.put(p.getId(), p);
             }

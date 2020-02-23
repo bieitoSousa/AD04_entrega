@@ -21,10 +21,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.bieitosousa.ad04;
-
+package com.bieitosousa.ad04.Data;
 
 import java.io.Serializable;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -41,44 +44,48 @@ import javax.persistence.Table;
  * @author bieito
  */
 @Entity
-@Table(name = "EMPLEADO")
-
-public class Empleado implements Serializable {
-    @OneToMany(mappedBy = "empleado")
-    private Set<TiendaEmpleado> tiendaEmpleado = new HashSet<TiendaEmpleado>();
+@Table(name = "PRODUCTO")
+public class Producto implements Serializable{
+    @OneToMany(mappedBy = "producto")
+    private Set<TiendaProducto> tiendaProducto = new HashSet<TiendaProducto>();
 
     @Id
-    @Column(name = "EMPLEADO_id")
+    @Column(name = "PRODUCTO_id")
       @GeneratedValue(strategy = GenerationType.AUTO)
-    private int id ;
-    @Column(name = "EMPLEADO_name", nullable=false)
+    private int id;
+    @Column(name = "PRODUCTO_name", nullable=false, unique = true)
+
     private String name;
-    @Column(name = "EMPLEADO_apellido", nullable=false)
-    private String apellido;
+    @Column(name = "PRODUCTO_price",nullable=false)
+
+    private float price;
+    @Column(name = "PRODUCTO_description",nullable=false)
+
+    private String description;
+
+
    
-      @Column(name = "EMPLEADO_nomCompleto", nullable=false, unique = true)
-    private String nomCompleto;
-
-    //@OneToMany(mappedBy = "empleado")
-    public Set<TiendaEmpleado> getTiendaEmpleado() {
-        return tiendaEmpleado;
+    public Set<TiendaProducto> getTiendaProducto() {
+        return tiendaProducto;
     }
 
-    public void addTiendaEmpleado(TiendaEmpleado tiendaEmpleado) {
-        this.tiendaEmpleado.add(tiendaEmpleado);
+    public void addTiendaProducto(TiendaProducto tiendaProducto) {
+        this.tiendaProducto.add(tiendaProducto);
     }
 
-    public void setTiendaEmpleado(Set<TiendaEmpleado> tiendaEmpleado) {
-        this.tiendaEmpleado = tiendaEmpleado;
+    public void setTiendaProducto(Set<TiendaProducto> tiendaProducto) {
+        this.tiendaProducto = tiendaProducto;
     }
-public Empleado(){}
-    public Empleado(String name, String apellido) {
+public Producto(){}
+    public Producto(String name, float price, String description) {
         this.name = name;
-        this.apellido = apellido;
-        this.nomCompleto=name+apellido;
+        this.price = price;
+        this.description = description;
     }
 
-    
+
+ 
+
     public String getName() {
         return name;
     }
@@ -87,26 +94,30 @@ public Empleado(){}
         this.name = name;
     }
 
-    public String getApellido() {
-        return apellido;
+    public float getPrice() {
+        return price;
     }
 
-    public void setApellido(String apellido) {
-        this.apellido = apellido;
+    public void setPrice(float price) {
+        this.price = price;
     }
 
-   
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
     @Override
     public String toString() {
-        return "Empleado{" + "id=" + id + ", name=" + name + ", apellidos=" + apellido + '}';
+        return "Producto{ id=" + id + "name=" + name + ", price=" + price + ", description=" + description + '}';
     }
-
-   
 
     @Override
     public int hashCode() {
-        int hash = 3;
+        int hash = 7;
         return hash;
     }
 
@@ -121,16 +132,15 @@ public Empleado(){}
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final Empleado other = (Empleado) obj;
-        if (!Objects.equals(this.name, other.name)) {
+        final Producto other = (Producto) obj;
+        if (Float.floatToIntBits(this.price) != Float.floatToIntBits(other.price)) {
             return false;
         }
-        if (!Objects.equals(this.apellido, other.apellido)) {
+        if (!Objects.equals(this.name, other.name)) {
             return false;
         }
         return true;
     }
 
-  
-
+   
 }
