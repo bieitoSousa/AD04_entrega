@@ -42,7 +42,7 @@ import javax.persistence.OneToMany;
 public class Franquicia {
 
     // acceso a hibernate
-    HibernateUtil h = HibernateUtil.getInstance();
+    HibernateUtil h ;
     // Mapas donde guardamos los objetos
     HashMap<String, Tienda> mapTienda = new HashMap<String, Tienda>();
     HashMap<String, Producto> mapProducto = new HashMap<String, Producto>();
@@ -69,6 +69,7 @@ public class Franquicia {
 
     // constructor cargando las Provincias
     public Franquicia() {
+        h = HibernateUtil.getInstance();
         if ((mapProvincia = cargarProvincias()) == null) {
             System.err.println("ERROR : NO SE HAN CARGADO LA PROVINCIAS");
         }
@@ -95,7 +96,7 @@ public class Franquicia {
      **************************************************************
      */
     public HashMap<String, Tienda> getMapTienda() {
-        if (operacionTienda) {
+        if (operacionTienda  ){
             return mapTienda = cargarTienda();
         } else {
             return mapTienda;
@@ -498,6 +499,7 @@ public boolean updateEmpleado(String nameEmpleado) {
     }
 
     private HashMap<String, Tienda> cargarTienda() {
+        System.out.println("{ --- CARGANDO TIENDAS ---}");
         List<Tienda> listTienda = h.get("from Tienda", Tienda.class);
         if (listTienda.size() > 0) {
             for (Tienda t : listTienda) {
@@ -509,6 +511,7 @@ public boolean updateEmpleado(String nameEmpleado) {
     }
 
     private HashMap<String, Producto> cargarProducto() {
+                System.out.println("{ --- CARGANDO PRODUCTOS ---}");
         List<Producto> listProducto = h.get("from Producto", Producto.class);
         if (listProducto.size() > 0) {
             for (Producto p : listProducto) {
@@ -520,6 +523,7 @@ public boolean updateEmpleado(String nameEmpleado) {
     }
 
     private HashMap<String, Empleado> cargarEmpleado() {
+                System.out.println("{ --- CARGANDO EMPLEADOS ---}");
         List<Empleado> listEmpleado = h.get("from Empleado", Empleado.class);
         if (listEmpleado.size() > 0) {
             for (Empleado em : listEmpleado) {
@@ -531,6 +535,7 @@ public boolean updateEmpleado(String nameEmpleado) {
     }
 
     private HashMap<String, Cliente> cargarCliente() {
+                System.out.println("{ --- CARGANDO CLIENTES ---}");
         List<Cliente> listCliente = h.get("from Cliente", Cliente.class);
         if (listCliente.size() > 0) {
             for (Cliente cl : listCliente) {
@@ -539,5 +544,8 @@ public boolean updateEmpleado(String nameEmpleado) {
             this.operacionCliente = false;
         }
         return mapCliente;
+    }
+    public void end(){
+    h=null;
     }
 }

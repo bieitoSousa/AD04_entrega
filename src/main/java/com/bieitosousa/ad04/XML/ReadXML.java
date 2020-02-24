@@ -25,9 +25,11 @@ public class ReadXML {
     // }
     public static void read() {
         try {
+           
             SAXParserFactory spf = SAXParserFactory.newInstance();
             SAXParser sp = spf.newSAXParser();
-            File f = new File(".\\src\\main\\java\\com\\bieitosousa\\ad03_db\\XML\\XML_tarea.xml");
+            File f = new File(".\\XML_tarea.xml");
+             System.out.println("ruta "+f.canRead());
             TitularHandlet th = new TitularHandlet();
             sp.parse(f, th);
             ArrayList<Titulo> titulos = th.getTitulos();

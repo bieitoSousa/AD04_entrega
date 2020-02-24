@@ -40,12 +40,13 @@ import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
+
 /**
  *
  * @author bieito
  */
 
-   public class Main {
+public class Main {
 
     static Franquicia f = Franquicia.getInstance();
     static Tienda t = null;
@@ -58,22 +59,22 @@ import org.hibernate.query.Query;
         //Compañia c = Compañia.getInstance();; 
 
         while (!salir) {
-            String encabezado =
-                    "=====================================================================\n "
+            String encabezado
+                    = "=====================================================================\n "
                     + "=============================== Menu ==============================\n "
                     + "===================================================================\n";
             if (t != null) {
                 encabezado += "\n=  # Tienda selecionada :";
-                encabezado += "\n=  # Nombre    => [ " + t.getName()+"]";
-                encabezado += "\n=  # Provincia => [ " + t.getProvincia()+"]";
-                encabezado += "\n=  # Ciudad    => [ " + t.getCiudad()+"]";
-                encabezado += "\n=  # Numero de Empleados    => [ " + t.getTiendaEmpleado().size()+"]";
-                encabezado += "\n=  # Numero de Productos    => [ " + t.getTiendaProducto().size()+"]";
-                encabezado += "\n=  # Tienda selecionada Nombre => [ " + t.getName()+"]";
+                encabezado += "\n=  # Nombre    => [ " + t.getName() + "]";
+                encabezado += "\n=  # Provincia => [ " + t.getProvincia() + "]";
+                encabezado += "\n=  # Ciudad    => [ " + t.getCiudad() + "]";
+                encabezado += "\n=  # Numero de Empleados    => [ " + t.getTiendaEmpleado().size() + "]";
+                encabezado += "\n=  # Numero de Productos    => [ " + t.getTiendaProducto().size() + "]";
+                encabezado += "\n=  # Tienda selecionada Nombre => [ " + t.getName() + "]";
             } else {
                 encabezado += "\n = NO HAY NINGUNA TIENDA SELECCIONADA";
             }
-             encabezado += "===================================================================\n";
+            encabezado += "===================================================================\n";
             System.out.println(
                     encabezado
                     + "\n1. - Selecionar una tenda.\n"
@@ -108,6 +109,7 @@ import org.hibernate.query.Query;
 
                 switch (op) {
                     case 0: // 0. - Sair do programa. 
+                        f.end();
                         salir = true;
                         break;
                     case 1: // 1. - Selecionar una tenda.
@@ -170,7 +172,7 @@ import org.hibernate.query.Query;
                         break;
                     case 8: // 8. - Mostrar os Productos nunha determinada tenda.. 
                         if (getTienda()) {
-                           t.viewProducto();
+                            t.viewProducto();
                         } else {
                             System.out.println("No se han encontrado tiendas disponibles : porfavor introduzca o seleccione una tienda");
                         }
@@ -185,22 +187,22 @@ import org.hibernate.query.Query;
                     case 10: // 10. - Mostrar o stock dun producto dunha tenda.
                         if (getTienda()) {
                             t.viewProducto();
-                        s = true;
-                        n = "";
-                        Producto producto=null;
-                        while (s && !"exit".equals(n)) {
-                            f.viewProducto();
-                            System.out.println("[para salir escribe exit] Dime un Producto .\n");
-                            n = HelpFunctions.inputString("nombre ? ");
-                            if ("exit".equals(n)) {
-                                break;
-                            }
-                            if ((producto=f.getMapProducto().get(n))!=null && t != null) {
-                                t.getProductStock(producto);
-                                s = false;
-                            }
+                            s = true;
+                            n = "";
+                            Producto producto = null;
+                            while (s && !"exit".equals(n)) {
+                                f.viewProducto();
+                                System.out.println("[para salir escribe exit] Dime un Producto .\n");
+                                n = HelpFunctions.inputString("nombre ? ");
+                                if ("exit".equals(n)) {
+                                    break;
+                                }
+                                if ((producto = f.getMapProducto().get(n)) != null && t != null) {
+                                    t.getProductStock(producto);
+                                    s = false;
+                                }
 
-                        }
+                            }
                         } else {
                             System.out.println("No se han encontrado tiendas disponibles : porfavor introduzca o seleccione una tienda");
                         }
@@ -227,7 +229,7 @@ import org.hibernate.query.Query;
                         if (getTienda()) {
                             s = true;
                             n = "";
-                            Producto producto= null;
+                            Producto producto = null;
                             while (s && !"exit".equals(n)) {
                                 t.viewProducto();
                                 System.out.println("[para salir escribe exit] Seleccione un Producto para eliminarlo l .\n");
@@ -235,7 +237,7 @@ import org.hibernate.query.Query;
                                 if ("exit".equals(n)) {
                                     break;
                                 }
-                                if ((producto = t.getMapProducto().get(n))!=null) {
+                                if ((producto = t.getMapProducto().get(n)) != null) {
                                     System.out.println("Producto [" + n + "]  ha sido eliminado de " + t.getName());
                                     t.deleteProducto(producto);
                                     s = false;
@@ -305,15 +307,23 @@ import org.hibernate.query.Query;
                                     break;
                                 }
                                 float horas = (float) HelpFunctions.inputFloat("numero de horas ? ");
-                                if ((empleado =f.getMapEmpleado().get(n))!=null && t != null) {
-                                    if (f.getMapEmpleado().containsKey(n)){
-                                    t.updateEmpleado(empleado, horas);
-                                    System.out.print("Se ha añadido un horario al empleado :\n" + n);
-                                    s = false;
-                                    }else {
-                                     t.addEmpleado(empleado, horas);
-                                    System.out.print("Se ha añadido un horario al empleado :\n" + n);
-                                    s = false;
+                                if ((empleado = f.getMapEmpleado().get(n)) != null && t != null) {
+                                    if (t.getMapEmpleado().containsKey(n)) {
+                                        if (t.updateEmpleado(empleado, horas)) {
+                                            System.out.print("Se ha modificado " + horas + " para el Empleado " + n + " en la tienda " + t.getName() + " :\n");
+
+                                        } else {
+                                            System.out.println("ERROR : " + "al modificar " + horas + " para el Empleado " + n + " en la tienda " + t.getName() + " :\n");
+                                        }
+                                        s = false;
+                                    } else {
+                                        if (t.addEmpleado(empleado,(float) horas)) {
+                                            System.out.print("Se ha añadido " + horas + " para el Empleado " + n + " en la tienda " + t.getName() + " :\n");
+
+                                        } else {
+                                            System.out.println("ERROR : " + "al añadir " + horas + " para el Empleado " + n + " en la tienda " + t.getName() + " :\n");
+                                        }
+                                        s = false;
                                     }
                                 }
                             }
@@ -386,8 +396,8 @@ import org.hibernate.query.Query;
             } catch (InputMismatchException e) {
                 System.out.println("Debes insertar un número");
                 reader.next();
-            } catch (Exception e){
-                System.out.println("excepcion : "+e.getMessage());
+            } catch (Exception e) {
+                System.out.println("excepcion : " + e.getMessage());
             }
         }
         reader.close(); // Cerramos el objeto Scanner
@@ -407,17 +417,25 @@ import org.hibernate.query.Query;
                 break;
             }
             int stock = HelpFunctions.inputInt("stock ? ");
-            if ((producto =f.getMapProducto().get(n))!= null && t
+            if ((producto = f.getMapProducto().get(n)) != null && t
                     != null) {
-                if (t.getMapProducto().containsKey(n)){
-                t.updateProducto(producto, stock);
-                System.out.print("Se ha añadido un producto :\n" + t.toString());
-                s = false;
-            }else {
-                   t.addProducto(producto, stock);
-                System.out.print("Se ha añadido un producto :\n" + t.toString());
-                s = false;  
-                    
+                if (t.getMapProducto().containsKey(n)) {
+                   if ( t.updateProducto(producto, stock)){
+                        System.out.print("Se ha modificado el stock , en el "+producto+" a la tienda  ["+t.getName()+"] :\n"); 
+                   }else{
+                         System.out.print("Error :al modificar el stock , en el "+producto+" a la tienda  ["+t.getName()+"] :\n");
+                   }
+                  
+                    s = false;
+                } else {
+                    if ( t.addProducto(producto, stock)){
+                        System.out.print("Se ha añadido el stock  ["+stock+"], en el "+producto+" a la tienda  ["+t.getName()+"] :\n"); 
+                    }else{
+                        
+                    }
+                    System.out.print("Se ha añadido el stock  ["+stock+"], en el "+producto+" a la tienda  ["+t.getName()+"] :\n");
+                    s = false;
+
                 }
             }
         }
@@ -435,52 +453,53 @@ import org.hibernate.query.Query;
             if ("exit".equals(n)) {
                 break;
             }
-            if ((producto = f.getMapProducto().get(n))!= null && t != null) {
-                t.addProducto(producto,1);
-                System.out.println("Se ha añadido un producto :[" + n + "] a la tienda [" +t.getName() +"]" );
+            if ((producto = f.getMapProducto().get(n)) != null && t != null) {
+                t.addProducto(producto, 1);
+                System.out.println("Se ha añadido un producto :[" + n + "] a la tienda [" + t.getName() + "]");
                 s = false;
             }
         }
     }
 
-
-    
-    
-
     private static void menuAddTienda() {
-        try{
+
         boolean s = true;
         String n = "";
         String c = "";
-        Provincia pro =null;
+        Provincia pro = null;
         while (s && !"exit".equals(n) && !"exit".equals(c)) {
             System.out.println("[para salir escribe exit] Creando una tienda dime: .\n");
             n = HelpFunctions.inputString("nombre ? ");
             if ("exit".equals(n)) {
                 break;
             }
-             f.viewProvincia();
-             
-           if(( pro = f.getMapProvincia().get(( HelpFunctions.inputInt("provincia ? "))))!= null){
-            c = HelpFunctions.inputString("cidade ? ");
-            if ("exit".equals(c)) {
-                break;
+            f.viewProvincia();
+
+            if ((pro = f.getMapProvincia().get((HelpFunctions.inputInt("provincia ? ")))) != null) {
+                c = HelpFunctions.inputString("cidade ? ");
+                if ("exit".equals(c)) {
+                    break;
+                }
+                if (HelpFunctions.whiteSpace(n) && HelpFunctions.whiteSpace(c) && !f.getMapTienda().containsKey(n) && (pro != null)) {
+
+                    f.addTienda(new Tienda(n, pro, c));
+//                t=null;
+                    System.out.println("n vale :" + n);
+                    System.out.println("mapTienda vale " + f.getMapTienda().get(n));
+//             1t=f.getMapTienda().get(n);
+
+                    if ((t = f.getMapTienda().get(n)) != null) {
+                        System.out.println("Se a seleccionado la tienda" + t);
+                    }
+                    s = false;
+
+                }
+
+            } else {
+                System.out.println("Provincia no valida");
             }
-            if (HelpFunctions.whiteSpace(n) && HelpFunctions.whiteSpace(c) && !f.getMapTienda().containsKey(n) && (pro != null)) {
-                
-                f.addTienda(new Tienda(n, pro, c));
-                t=null;
-               if ((t=f.getMapTienda().get(n))!=null){
-                    System.out.println("Se a seleccionado la tienda"+t);
-               }
-                s = false;
-            }
-        }else{System.out.println("Provincia no valida");}
         }
-    }catch (Exception e){
-            System.out.println("Excepcion ..."+e.getMessage());
-    }
-    
+
     }
 
     private static void menuSelectTienda() {
@@ -497,7 +516,7 @@ import org.hibernate.query.Query;
             }
             if (f.getMapTienda().containsKey(n)) {
                 t = f.getMapTienda().get(n);
-                System.out.println("Tienda Seleccionada ["+t.getName()+"]");
+                System.out.println("Tienda Seleccionada [" + t.getName() + "]");
                 s = false;
             }
         }
@@ -536,7 +555,4 @@ import org.hibernate.query.Query;
 
     }
 
-
-
-     
 }

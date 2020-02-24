@@ -32,15 +32,40 @@ import com.bieitosousa.ad04.Json.*;
  */
 public class Text {
     static Franquicia f = Franquicia.getInstance();
-    
+    static Tienda t;
     static Provincia pr = new Provincia(60,"Paco");
-    static Tienda t = new Tienda("a",pr,"b");
+    static Tienda t0 = new Tienda("a",pr,"b");
     static Tienda t1 = new Tienda("c",pr,"z");
     static Tienda t2 = new Tienda("d",pr,"q");
+    static Empleado em0 = new Empleado("em0_name","em0_apell");
+    static Empleado em1 = new Empleado("em1_name","em1_apell");
+    static Empleado em2 = new Empleado("em2_name","em2_apell");
+    static Producto pr0 = new Producto("pra",12,"b");
+    static Producto pr1 = new Producto("prb",23,"z");
+    static Producto pr2 = new Producto("prc",14,"q");
+    static Cliente cl0 = new Cliente("cli0_name","cli0_apell","cli0_email");
+    static Cliente cl1 = new Cliente("cli1_name","cli1_apell","cli1_email");
+    static Cliente cl2 = new Cliente("cli2_name","cli2_apell","cli2_email");
      public static void main(String[] args) throws Exception {
-     f.addTienda(t);
+     f.addTienda(t0);
      f.addTienda(t1);
      f.addTienda(t2);
+     f.deleteTienda("c");
+     f.addEmpleado(em0);
+     f.addEmpleado(em1);
+     f.addEmpleado(em2);
+     f.addCliente(cl0);
+     f.addCliente(cl1);
+     f.addCliente(cl2);
+     f.addProducto(pr0);
+     f.addProducto(pr1);
+     f.addProducto(pr2);
+     t1.addProducto(pr0, 0);
+     t1.addEmpleado(em0, 0);
+     t1.updateProducto(pr0, 21);
+     t1.updateEmpleado(em0, 21);
+             
+     t=t1;
       
      }
 }

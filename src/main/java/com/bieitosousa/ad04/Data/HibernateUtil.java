@@ -48,11 +48,11 @@ import org.hibernate.service.ServiceRegistry;
 public class HibernateUtil {
 
     static SessionFactory sessionFact = null;
-    static Session session = null;
+    
     static Transaction tran = null;
     private static HibernateUtil hu;
     private static final SessionFactory sessionFactoryBuid = startSessionFactory();
-
+    private static final Session session = sessionFactoryBuid.openSession();
     private HibernateUtil() {
 
     }
@@ -60,6 +60,7 @@ public class HibernateUtil {
     public static HibernateUtil getInstance() {
         if (hu == null) {
             hu = new HibernateUtil();
+            
         }
         return hu;
     }
@@ -68,6 +69,8 @@ public class HibernateUtil {
         return getInstance().sessionFactoryBuid;
     }
 
+    
+    
     //Este método devolve a sesión para poder facer operacións coa base de datos
     private static SessionFactory startSessionFactory() {
         SessionFactory sessionFactory = null;
@@ -132,21 +135,21 @@ public class HibernateUtil {
     public <T> boolean view(String consulta, Class<T> c) {
         try {
 
-            if ((session = sessionFactoryBuid.openSession()) != null) {
+//            if ((session = getSession()) != null) {
                 List<T> objList = (List< T>) session.createQuery(consulta, c).getResultList();
                          System.out.println("|| ==== LISTA DE  ["+c.getSimpleName()+"] EN LA FRANQUICIA === ||");
                 for (Object aux : objList) {
                     System.out.println(aux.toString());
                 }
                  System.out.println(" || =========================================================== ||");
-                session.close();
-            }
+//                session.close();
+//            }
 
         } catch (Exception e) {
-            System.out.println("Error Global: ADD{" + c.toString() + "} Mensaje de Error : [  " + e.toString() + "]");
+            System.out.println("Error Global: VIEW{" + c.toString() + "} Mensaje de Error : [  " + e.toString() + "]");
             return false;
         } finally {
-            session.close();
+//            session.close();
         }
         return false;
     }
@@ -154,14 +157,14 @@ public class HibernateUtil {
     public <T> List<T> get(String consulta, Class<T> c) {
         List<T> objList = null;
         try {
-            if ((session = sessionFactoryBuid.openSession()) != null) {
+//            if ((session = getSession()) != null) {
                 objList = (List< T>) session.createQuery(consulta, c).getResultList();
-            }
+//            }
         } catch (Exception e) {
-            System.out.println("Error Global: ADD{" + c.toString() + "} Mensaje de Error : [  " + e.toString() + "]");
+            System.out.println("Error Global: GET{" + c.toString() + "} Mensaje de Error : [  " + e.toString() + "]");
 
         } finally {
-            session.close();
+//            session.close();
         }
         return objList;
     }
@@ -170,7 +173,7 @@ public class HibernateUtil {
         try {
             //Collemos a sesión de Hibernate
 
-            if ((session = sessionFactoryBuid.openSession()) != null) {
+//            if ((session = getSession()) != null) {
                 //Comenzamos unha transacción
                 if ((tran = session.beginTransaction()) != null) {
                     //Gardamos o equipo
@@ -180,7 +183,7 @@ public class HibernateUtil {
 
                     return true;
                 }
-            }
+//            }
         } catch (Exception e) {
             if (tran != null) {
                 tran.rollback();
@@ -188,7 +191,7 @@ public class HibernateUtil {
             System.out.println("Error Global: ADD{" + obj.toString() + "} Mensaje de Error : [  " + e.toString() + "]");
             return false;
         } finally {
-            session.close();
+//            session.close();
         }
         return false;
     }
@@ -197,25 +200,25 @@ public class HibernateUtil {
         try {
             //Collemos a sesión de Hibernate
 
-            if ((session = sessionFactoryBuid.openSession()) != null) {
+//            if ((session = getSession()) != null) {
                 //Comenzamos unha transacción
                 if ((tran = session.beginTransaction()) != null) {
                     //Gardamos o equipo
                     session.delete(obj);
                     //Facemos un commit da transacción
                     tran.commit();
-                    session.close();
+//                    session.close();
                     return true;
                 }
-            }
+//            }
         } catch (Exception e) {
             if (tran != null) {
                 tran.rollback();
             }
-            System.out.println("Error Global: ADD{" + obj.toString() + "} Mensaje de Error : [  " + e.toString() + "]");
+            System.out.println("Error Global: DELETE{" + obj.toString() + "} Mensaje de Error : [  " + e.toString() + "]");
             return false;
         } finally {
-            session.close();
+//            session.close();
         }
         return false;
     }
@@ -223,28 +226,31 @@ public class HibernateUtil {
     public boolean update(Object obj) {
         try {
             //Collemos a sesión de Hibernate
-            if ((session = sessionFactoryBuid.openSession()) != null) {
+//            if ((session = getSession()) != null) {
                 //Comenzamos unha transacción
                 if ((tran = session.beginTransaction()) != null) {
                     //Gardamos o equipo
                     session.update(obj);
                     //Facemos un commit da transacción
                     tran.commit();
-                    session.close();
+//                    session.close();
                     return true;
-                }
+//                }
             }
 
         } catch (Exception e) {
             if (tran != null) {
                 tran.rollback();
             }
-            System.out.println("Error Global: ADD{" + obj.toString() + "} Mensaje de Error : [  " + e.toString() + "]");
+            System.out.println("Error Global: UPDATE{" + obj.toString() + "} Mensaje de Error : [  " + e.toString() + "]");
             return false;
         } finally {
-            session.close();
+//            session.close();
         }
         return false;
     }
+
+ 
+
 
 }
