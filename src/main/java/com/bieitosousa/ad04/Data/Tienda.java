@@ -53,11 +53,10 @@ import javax.persistence.*;
 public class Tienda implements Serializable {
 
 //    private Franquicia f = null;
-    private HashMap<String, Producto> mapProducto = new HashMap<String, Producto>();
-    private HashMap<String, Empleado> mapEmpleado = new HashMap<String, Empleado>();
-
-    boolean operacionTiendaProducto = true;
-    boolean operacionTiendaEmpleado = true;
+//    private HashMap<String, Producto> mapProducto = new HashMap<String, Producto>();
+//    private HashMap<String, Empleado> mapEmpleado = new HashMap<String, Empleado>();
+    private boolean operacionTiendaProducto = true;
+    private boolean operacionTiendaEmpleado = true;
 
     @OneToMany(mappedBy = "tienda")
     private Set<TiendaProducto> tiendaProducto = new HashSet<TiendaProducto>();
@@ -81,8 +80,11 @@ public class Tienda implements Serializable {
     private String ciudad;
 
     public Set<TiendaProducto> getTiendaProducto() {
-        cargarTiendaProducto();
-        return tiendaProducto;
+        if (operacionTiendaProducto) {
+            return tiendaProducto = cargarTiendaProducto();
+        } else {
+            return tiendaProducto;
+        }
     }
 //   
 //    public Set<Producto> getProducto() {
@@ -90,8 +92,12 @@ public class Tienda implements Serializable {
 //    }
 
     public Set<TiendaEmpleado> getTiendaEmpleado() {
-        cargarTiendaEmpleado();
-        return tiendaEmpleado;
+        if (operacionTiendaEmpleado) {
+           
+            return tiendaEmpleado = cargarTiendaEmpleado();
+        } else {
+            return tiendaEmpleado;
+        }
     }
 
 //    public Set<Empleado> getEmpleado() {
@@ -150,32 +156,31 @@ public class Tienda implements Serializable {
         this.ciudad = ciudad;
     }
 
-    public HashMap<String, Producto> getMapProducto() {
-        if (operacionTiendaProducto) {
-            return mapProducto = cargarProducto();
-        } else {
-            return mapProducto;
-
-        }
-
-    }
-
-    public void setMapProducto(HashMap<String, Producto> mapProducto) {
-        this.mapProducto = mapProducto;
-    }
-
-    public HashMap<String, Empleado> getMapEmpleado() {
-        if (this.operacionTiendaEmpleado) {
-            return mapEmpleado = cargarEmpleado();
-        } else {
-            return mapEmpleado;
-        }
-    }
-
-    public void setMapEmpleado(HashMap<String, Empleado> mapEmpleado) {
-        this.mapEmpleado = mapEmpleado;
-    }
-
+//    public HashMap<String, Producto> getMapProducto() {
+//        if (operacionTiendaProducto) {
+//            return mapProducto = cargarProducto();
+//        } else {
+//            return mapProducto;
+//
+//        }
+//
+//    }
+//
+//    public void setMapProducto(HashMap<String, Producto> mapProducto) {
+//        this.mapProducto = mapProducto;
+//    }
+//
+//    public HashMap<String, Empleado> getMapEmpleado() {
+//        if (this.operacionTiendaEmpleado) {
+//            return mapEmpleado = cargarEmpleado();
+//        } else {
+//            return mapEmpleado;
+//        }
+//    }
+//
+//    public void setMapEmpleado(HashMap<String, Empleado> mapEmpleado) {
+//        this.mapEmpleado = mapEmpleado;
+//    }
     /**
      * ************************************************************
      * METODOS toString
@@ -235,16 +240,18 @@ public class Tienda implements Serializable {
         tp.setProducto(producto);
         tp.setTienda(this);
         tp.setStock(Stock);
-        if (getMapProducto().containsKey(producto.getName())){
-            System.out.println(producto.toString()+"ya esta esta en la tienda ");
-        }else{
-           if (HibernateUtil.getInstance().add(tp)) {
-            this.operacionTiendaProducto = true;
-            getMapProducto();
-            return true;
-        }  
+        if (isTiendaProductoContainsKey(producto.getName())) {
+            System.out.println(producto.toString() + "ya esta esta en la tienda ");
+        } else {
+            if (HibernateUtil.getInstance().add(tp)) {
+                this.operacionTiendaProducto = true;
+                getTiendaProducto();
+                System.out.println("TIENDA :: [_SI_] se a AÑADIDO producto [" + producto + "] a la Tienda [" + this.getName() + "]");
+                return true;
+            }
         }
-       
+        System.out.println("TIENDA :: [_NO_] se a AÑADIDO producto [" + producto + "] a la Tienda [" + this.getName() + "]");
+
         return false;
 
     }
@@ -254,72 +261,95 @@ public class Tienda implements Serializable {
         te.setEmpleado(empleado);
         te.setTienda(this);
         te.setNhora(nhoras);
-        System.out.println("creamos"+te);
+        System.out.println("creamos" + te);
         if (HibernateUtil.getInstance().add(te)) {
-            System.out.println("metemos en la DB a "+te);
+            System.out.println("metemos en la DB a " + te);
             this.operacionTiendaEmpleado = true;
-            getMapEmpleado();
-            System.out.println("metemos en el mapEmpleados"+getMapEmpleado().containsKey(empleado.getName()));
+            getTiendaEmpleado();
+
+            System.out.println("TIENDA :: [_SI_] se a AÑADIDO EMPLEADO [" + empleado + "] a la Tienda [" + this.getName() + "]");
+
             return true;
         }
+        System.out.println("TIENDA :: [_NO_] se a AÑADIDO EMPLEADO [" + empleado + "] a la Tienda [" + this.getName() + "]");
+
         return false;
     }
 
     public boolean updateProducto(Producto producto, int Stock) {
-        for (TiendaProducto tp : this.tiendaProducto) {
+        for (TiendaProducto tp : getTiendaProducto()) {
             if (tp.getProducto().equals(producto)) {
                 tp.setStock(Stock);
+                System.out.println("tp"+tp);
                 if (HibernateUtil.getInstance().update(tp)) {
                     this.operacionTiendaProducto = true;
-                    getMapProducto();
+                    getTiendaProducto();
+                    System.out.println("TIENDA :: [_SI_] se a MODIFICADO producto [" + producto + "] a la Tienda [" + this.getName() + "]");
                     return true;
                 }
 
+            }else{
+                System.out.println("Error :: LOS PRODUCTOS SON DIFERENTES");
             }
         }
+        System.out.println("TIENDA :: [_NO_] se a MODIFICADO producto [" + producto + "] a la Tienda [" + this.getName() + "]");
+
         return false;
 
     }
 
     public boolean updateEmpleado(Empleado empleado, float nhoras) {
-        for (TiendaEmpleado te : this.tiendaEmpleado) {
+        for (TiendaEmpleado te : getTiendaEmpleado()) {
             if (te.getEmpleado().equals(empleado)) {
                 te.setNhora(nhoras);
                 if (HibernateUtil.getInstance().update(te)) {
                     this.operacionTiendaEmpleado = true;
-                    getMapEmpleado();
+                    getTiendaEmpleado();
+                    System.out.println("TIENDA :: [_SI_] se a MODIFICADO EMPLEADO [" + empleado + "] a la Tienda [" + this.getName() + "]");
+
                     return true;
+
                 }
 
             }
         }
+        System.out.println("TIENDA :: [_NO_] se a MODIFICADO EMPLEADO [" + empleado + "] a la Tienda [" + this.getName() + "]");
+
         return false;
     }
 
     public boolean deleteEmpleado(Empleado empleado) {
-        for (TiendaEmpleado te : this.tiendaEmpleado) {
+        for (TiendaEmpleado te : getTiendaEmpleado()) {
             if (te.getEmpleado().equals(empleado)) {
                 if (HibernateUtil.getInstance().delete(te)) {
                     this.operacionTiendaEmpleado = true;
-getMapEmpleado();
+                    getTiendaEmpleado();
+                    System.out.println("TIENDA :: [_SI_] se a ELIMINADO EMPLEADO [" + empleado + "] a la Tienda [" + this.getName() + "]");
+
                     return true;
                 }
             }
         }
+        System.out.println("TIENDA :: [_NO_] se a ELIMINADO EMPLEADO [" + empleado + "] a la Tienda [" + this.getName() + "]");
+
         return false;
     }
 
     public boolean deleteProducto(Producto producto) {
-        for (TiendaProducto tp : this.tiendaProducto) {
+        for (TiendaProducto tp : getTiendaProducto()) {
             if (tp.getProducto().equals(producto)) {
                 if (HibernateUtil.getInstance().delete(tp)) {
                     this.operacionTiendaProducto = true;
-                    getMapProducto();
+                    getTiendaProducto();
+                    System.out.println("TIENDA :: [_SI_] se a ELIMINADO producto [" + producto + "] a la Tienda [" + this.getName() + "]");
+
                     return true;
                 }
 
             }
         }
+        System.out.println("TIENDA :: [_NO_] se a ELIMINADO producto [" + producto + "] a la Tienda [" + this.getName() + "]");
+
         return false;
 
     }
@@ -328,7 +358,7 @@ getMapEmpleado();
         boolean exit = false;
         System.out.println("|| ==== LISTA DE PRODUCTOS EN LA TIENDA [" + this.name + "] === ||");
         for (TiendaProducto tp : getTiendaProducto()) {
-            System.out.println("Tienda ["+this.getName()+"]Producto ["+tp.getProducto().getName()+"] Stock ["+tp.getStock()+"]");
+            System.out.println("Tienda [" + this.getName() + "]Producto [" + tp.getProducto().getName() + "] Stock [" + tp.getStock() + "]");
             exit = true;
         }
         System.out.println(" || =========================================================== ||");
@@ -339,7 +369,7 @@ getMapEmpleado();
         boolean exit = false;
         System.out.println("|| ==== LISTA DE EMPLEADOS EN LA TIENDA [" + this.name + "] === ||");
         for (TiendaEmpleado te : getTiendaEmpleado()) {
-            System.out.println("Tienda ["+this.getName()+"]Producto ["+te.getEmpleado().getName()+"] Stock ["+te.getNhora()+"]");
+            System.out.println("Tienda [" + this.getName() + "]Producto [" + te.getEmpleado().getName() + "] Stock [" + te.getNhora() + "]");
             exit = true;
         }
         System.out.println(" || =========================================================== ||");
@@ -368,34 +398,64 @@ getMapEmpleado();
         return stock;
     }
 
-    private HashMap<String, Producto> cargarProducto() {
-        tiendaProducto = new HashSet<TiendaProducto>( HibernateUtil.getInstance().get("from TiendaProducto", TiendaProducto.class));
-        if (tiendaProducto.size() > 0) {
-            for (TiendaProducto tp : tiendaProducto) {
-                mapProducto.put(tp.getProducto().getName(), tp.getProducto());
+//    private HashMap<String, Producto> cargarProducto() {
+//        tiendaProducto = new HashSet<TiendaProducto>( HibernateUtil.getInstance().get("from TiendaProducto", TiendaProducto.class));
+//        if (tiendaProducto.size() > 0) {
+//            for (TiendaProducto tp : tiendaProducto) {
+//                mapProducto.put(tp.getProducto().getName(), tp.getProducto());
+//            }
+//            this.operacionTiendaProducto = false;
+//        }
+//        return mapProducto;
+//    }
+//
+//    private HashMap<String, Empleado> cargarEmpleado() {
+//        this.tiendaEmpleado = new HashSet<TiendaEmpleado>( HibernateUtil.getInstance().get("from TiendaEmpleado", TiendaEmpleado.class));
+//        if (tiendaEmpleado.size() > 0) {
+//            for (TiendaEmpleado te : tiendaEmpleado) {
+//                mapEmpleado.put(te.getEmpleado().getName(), te.getEmpleado());
+//            }
+//            this.operacionTiendaProducto = false;
+//        }
+//        return mapEmpleado;
+//    }
+    private Set<TiendaProducto> cargarTiendaProducto() {
+        this.tiendaProducto = new HashSet<TiendaProducto>(HibernateUtil.getInstance().get("from TiendaProducto", TiendaProducto.class));
+     operacionTiendaProducto = false;
+         return tiendaProducto;
+    }
+
+    private Set<TiendaEmpleado> cargarTiendaEmpleado() {
+         this.tiendaEmpleado = new HashSet<TiendaEmpleado>(HibernateUtil.getInstance().get("from TiendaEmpleado", TiendaEmpleado.class));
+     operacionTiendaEmpleado = false;
+         return tiendaEmpleado;
+    }
+
+    public boolean isTiendaEmpleadoContainsKey(String name) {
+        for (TiendaEmpleado te : getTiendaEmpleado()) {
+            if (te.getEmpleado().getName().equals(name)) {
+                return true;
             }
-            this.operacionTiendaProducto = false;
         }
-        return mapProducto;
+        return false;
     }
 
-    private HashMap<String, Empleado> cargarEmpleado() {
-        this.tiendaEmpleado = new HashSet<TiendaEmpleado>( HibernateUtil.getInstance().get("from TiendaEmpleado", TiendaEmpleado.class));
-        if (tiendaEmpleado.size() > 0) {
-            for (TiendaEmpleado te : tiendaEmpleado) {
-                mapEmpleado.put(te.getEmpleado().getName(), te.getEmpleado());
+    public Producto getProducto(String name) {
+        for (TiendaProducto te : getTiendaProducto()) {
+            if (te.getProducto().getName().equals(name)) {
+                return te.getProducto();
             }
-            this.operacionTiendaProducto = false;
         }
-        return mapEmpleado;
+        return null;
     }
 
-    private void cargarTiendaProducto() {
-         tiendaProducto = new HashSet<TiendaProducto>( HibernateUtil.getInstance().get("from TiendaProducto", TiendaProducto.class));
+    public boolean isTiendaProductoContainsKey(String name) {
+        for (TiendaProducto te : getTiendaProducto()) {
+            if (te.getProducto().getName().equals(name)) {
+                return true;
+            }
+        }
+        return false;
     }
 
-    private void cargarTiendaEmpleado() {
-       this.tiendaEmpleado = new HashSet<TiendaEmpleado>( HibernateUtil.getInstance().get("from TiendaEmpleado", TiendaEmpleado.class));
-    }
-   
 }

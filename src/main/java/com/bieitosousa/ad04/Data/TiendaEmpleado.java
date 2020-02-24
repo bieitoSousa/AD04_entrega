@@ -47,10 +47,12 @@ public class TiendaEmpleado implements Serializable {
     @Column(name = "TIENDAEMPLEADO_id")
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
-    @ManyToOne(cascade = CascadeType.ALL)
+//    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "TIENDA_ID")
     private Tienda tienda;
-    @ManyToOne(cascade = CascadeType.ALL)
+//    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "EMPLEADO_ID")
     private Empleado empleado;
     @Column(name = "TIENDAEMPLEADO_nhora")

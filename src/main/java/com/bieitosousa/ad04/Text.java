@@ -61,11 +61,19 @@ public class Text {
      f.addProducto(pr1);
      f.addProducto(pr2);
      t1.addProducto(pr0, 0);
+     t1.addProducto(pr1, 0);
+     t1.addProducto(pr2, 0);
+    
      t1.addEmpleado(em0, 0);
+     t1.addEmpleado(em1, 0);
+     t1.addEmpleado(em2, 0);
+    
      t1.updateProducto(pr0, 21);
      t1.updateEmpleado(em0, 21);
+    t1.deleteProducto(pr1);
+ t1.deleteEmpleado(em0);
              
-     t=t1;
+    
       
      }
 }

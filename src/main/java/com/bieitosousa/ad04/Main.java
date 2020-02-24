@@ -237,7 +237,7 @@ public class Main {
                                 if ("exit".equals(n)) {
                                     break;
                                 }
-                                if ((producto = t.getMapProducto().get(n)) != null) {
+                                if ((producto = t.getProducto(n)) != null) {
                                     System.out.println("Producto [" + n + "]  ha sido eliminado de " + t.getName());
                                     t.deleteProducto(producto);
                                     s = false;
@@ -308,7 +308,7 @@ public class Main {
                                 }
                                 float horas = (float) HelpFunctions.inputFloat("numero de horas ? ");
                                 if ((empleado = f.getMapEmpleado().get(n)) != null && t != null) {
-                                    if (t.getMapEmpleado().containsKey(n)) {
+                                    if (t.isTiendaEmpleadoContainsKey(n)) {
                                         if (t.updateEmpleado(empleado, horas)) {
                                             System.out.print("Se ha modificado " + horas + " para el Empleado " + n + " en la tienda " + t.getName() + " :\n");
 
@@ -419,7 +419,7 @@ public class Main {
             int stock = HelpFunctions.inputInt("stock ? ");
             if ((producto = f.getMapProducto().get(n)) != null && t
                     != null) {
-                if (t.getMapProducto().containsKey(n)) {
+                if (t.isTiendaProductoContainsKey(n)) {
                    if ( t.updateProducto(producto, stock)){
                         System.out.print("Se ha modificado el stock , en el "+producto+" a la tienda  ["+t.getName()+"] :\n"); 
                    }else{
