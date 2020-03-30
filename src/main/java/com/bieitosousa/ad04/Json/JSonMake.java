@@ -38,8 +38,8 @@ public class JSonMake {
     private static DbConnection connConf = null;
     private static Hibernate hConf = null;
     private static ConfigDB configDB = null;
-    static final File fProvincias = new File(".\\provincias.json");
-    static final File fconfig = new File(".\\config.json");
+    static final File fProvincias = new File("."+File.separator+"provincias.json");
+    static final File fconfig = new File("."+File.separator+"config.json");
 
     public static File getfProvincias() {
         return fProvincias;
