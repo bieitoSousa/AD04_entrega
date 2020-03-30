@@ -22,7 +22,6 @@
  * THE SOFTWARE.
  */
 package com.bieitosousa.ad04;
-
 import com.bieitosousa.ad04.Data.*;
 import com.bieitosousa.ad04.Help.*;
 import com.bieitosousa.ad04.Json.*;
