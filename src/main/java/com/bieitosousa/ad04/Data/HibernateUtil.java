@@ -88,8 +88,9 @@ public class HibernateUtil {
 
                 //Indicamos a localización da base de datos que vamos a utilizar
 //                settings.put(Environment.URL,"jdbc:mysql://192.168.56.101:3306/hibernate");
-                settings.put(Environment.URL, "jdbc:mysql://" + JSonMake.getDbConnection().getAddress() + ":" + JSonMake.getDbConnection().getPort() + "/" + JSonMake.getDbConnection().getName());
-
+                String timezone = "?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
+                settings.put(Environment.URL, "jdbc:mysql://" + JSonMake.getDbConnection().getAddress() + ":" + JSonMake.getDbConnection().getPort() + "/" + JSonMake.getDbConnection().getName()+timezone);
+ //             settings.put(Environment.URL,"jdbc:mysql://192.168.56.101:3306/hibernate?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC");
                 //Indicamos o usuario da base de datos con cal nos vamos conectar e o seu contrasinal
 //                settings.put(Environment.USER,"userhibernate");
                 settings.put(Environment.USER, JSonMake.getDbConnection().getUser());
